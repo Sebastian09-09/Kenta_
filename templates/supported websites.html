@@ -59,46 +59,12 @@
                 <main class="tm-col-right">
                     <section class="tm-content">
                         <div class="media my-3 mb-5 tm-service-media tm-service-media-img-l">
-                            <img src="{{ url_for('static', filename='img/supportedWebsites/readm.org.png') }}" alt="Image" class="tm-service-img">
-                            <div class="media-body tm-service-text">
-                            </div> 
+                            <img width="none" id="logo" src="{{ url_for('static', filename='img/supportedWebsites/bookwalker.png') }}" alt="Image" class="tm-service-img">
                         </div>
-                        <div class="media my-3 mb-5 tm-service-media">                            
-                            <div class="media-body tm-service-text">
-                            </div> 
-                            <img width="310px" src="{{ url_for('static', filename='img/supportedWebsites/logo_comicwalker.svg') }}" alt="Image" class="tm-service-img-r">
-                        </div> 
-                        <div class="media my-3 mb-5 tm-service-media tm-service-media-img-l">
-                            <img width="330px" src="{{ url_for('static', filename='img/supportedWebsites/kissmanga.org.png') }}" alt="Image" class="tm-service-img">
-                            <div class="media-body tm-service-text">
-                            </div>
-                        </div>
-                        <div class="media my-3 mb-5 tm-service-media">                            
-                            <div class="media-body tm-service-text">
-                            </div> 
-                            <img src="{{ url_for('static', filename='img/supportedWebsites/bookwalker.png') }}" alt="Image" class="tm-service-img">
-                        </div> 
-                        <div class="media my-3 mb-5 tm-service-media tm-service-media-img-l">
-                            <img src="{{ url_for('static', filename='img/supportedWebsites/mangaowl.png') }}" alt="Image" class="tm-service-img">
-                            <div class="media-body tm-service-text">
-                            </div>
-                        </div>
-                        <div class="media my-3 mb-5 tm-service-media">                            
-                            <div class="media-body tm-service-text">
-                            </div> 
-                            <img src="{{ url_for('static', filename='img/supportedWebsites/manganelo.png') }}" alt="Image" class="tm-service-img">
-                        </div>
-                        <div class="media my-3 mb-5 tm-service-media tm-service-media-img-l">
-                            <img src="{{ url_for('static', filename='img/supportedWebsites/mangakakalot.png') }}" alt="Image" class="tm-service-img">
-                            <div class="media-body tm-service-text">
-                            </div>
-                        </div>
-                        <div class="media my-3 mb-5 tm-service-media">                            
-                            <div class="media-body tm-service-text">
-                            </div> 
-                            <img width="200px" src="{{ url_for('static', filename='img/supportedWebsites/nhentai.svg') }}" alt="Image" class="tm-service-img">
-                        </div> 
-                                          
+                        <p id="about">nice site</p>
+                        <button onclick="server.decrement()" class="btn btn-primary">Back</button>
+                        <button id="count" style="cursor: not-allowed;" class="btn btn-primary">1/8</button>
+                        <button onclick="server.increment()" class="btn btn-primary">Next</button>            
                     </section>
                 </main>
             </div>
