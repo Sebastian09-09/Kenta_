@@ -14,7 +14,6 @@ a {
     transition: all 0.3s ease; 
     text-decoration: none;
 }
-
 ul { padding: 0; }
 a:hover { text-decoration: none; }
 button:focus { outline: none; }
@@ -181,6 +180,12 @@ hr { border-top: 1px solid white; }
 .btn-primary:hover {
     background-color: #848484;
     color: black;
+}
+
+.btn-primary:focus{
+    color: #2C353C;
+    background-color: none;
+    border-color: none;
 }
 
 .tm-site-footer {
