@@ -14,7 +14,7 @@
     <link rel = "icon" href="{{ url_for('static', filename='img/icon.png') }}">
 
 </head>
-<body>
+<body onload="fix()">
     <div class="tm-container">        
         <div>
             <div class="tm-row pt-4">
@@ -91,7 +91,7 @@
         </div>
 
         <!-- Diagonal background design -->
-        <div class="tm-bg">
+        <div id="grab" class="tm-bg">
             <div class="tm-bg-left"></div>
             <div class="tm-bg-right"></div>
         </div>
