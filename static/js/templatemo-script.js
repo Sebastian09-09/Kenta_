@@ -66,19 +66,17 @@ $(document).ready(function () {
 
 var currentWebpage = 0;
 var websites = {
-    0: ['bookwalker.png', '274' ,'BOOK☆WALKER is KADOKAWA &#039;s official eBook store &amp; app for Manga/Light Novel fans. Check out for free and exclusive eBooks, as well as special deals offered only on BOOK☆WALKER!' ,'Book Walker'],
-    1: ['kissmanga.org.png' , '350' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
-    2: ['logo_comicwalker.svg' , '300' , 'ComicWalker titles, updated every day, read over 3000 popular titles by KADOKAWA for free! English and Chinese (Traditional and Simplified) versions available also!' , 'Comic Walker'],
-    3: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot'],
-    4: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato'],
-    5: ['mangaowl.png' , '70' , 'Read english manga online free with a huge collections at Manga Owl, update fastest, most full, synthesized, translate free with high-quality images. The best place to read the updated latest, greatest, best-quality english manga for FREE with our best service. Enjoy!' , 'MangaOwl'],
-    6: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
-    7: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org'],
+    0: ['kissmanga.org.png' , '350' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
+    1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot'],
+    2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato'],
+    3: ['mangaowl.png' , '70' , 'Read english manga online free with a huge collections at Manga Owl, update fastest, most full, synthesized, translate free with high-quality images. The best place to read the updated latest, greatest, best-quality english manga for FREE with our best service. Enjoy!' , 'MangaOwl'],
+    4: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
+    5: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org'],
 };
 function increment(){
-    if (currentWebpage < 7){
+    if (currentWebpage < 5){
         currentWebpage = currentWebpage + 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/8'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
@@ -89,7 +87,7 @@ function increment(){
 function decrement(){
     if (currentWebpage >= 1){
         currentWebpage = currentWebpage - 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/8'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
@@ -98,5 +96,15 @@ function decrement(){
     }
 }
 function fix(){
+    document.getElementById("grab").style.height = "100%";
+}
+function Start() {
+    if (document.getElementById("checkbox_").checked){
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("grab").style.height = "100%";
+    }
+}
+function Fetch() {
+    document.getElementById("loading").style.display = "block";
     document.getElementById("grab").style.height = "100%";
 }
