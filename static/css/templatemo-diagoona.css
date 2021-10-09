@@ -357,3 +357,23 @@ textarea {
     .tm-service-img { margin-right: 0; }
     .tm-service-img-r { margin-left: 0; }
 }
+
+.closebtn:hover{
+    cursor: pointer;
+}
+
+.closebtn{
+    float: right;
+}
+
+#loading{
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.clearfix{
+    clear: both;
+}
