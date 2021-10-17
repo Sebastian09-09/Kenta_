@@ -374,6 +374,30 @@ textarea {
     transform: translate(-50%, -50%)
 }
 
+#seq{
+    color: #c06702;
+    font-size: 40px;
+    transform: translate(35%, 150%);
+    font-weight: bold;
+    font-style: italic;
+}
+
 .clearfix{
     clear: both;
+}
+
+#myBtn{
+    cursor: pointer;
+    color: floralwhite;
+    text-decoration: underline;
+}
+
+#more {display: none;}
+
+.logs{
+    background-color: #262626;
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
 }
