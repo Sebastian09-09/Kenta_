@@ -1,6 +1,7 @@
 from flask import Flask ,  render_template , request , redirect , url_for , flash
 import requests
 import dataFetcher
+import mangaDownloader
 app = Flask(__name__)
 
 #SETTINGS
@@ -39,10 +40,10 @@ def manga(url):
 			flash(f'Please provide a URL' , 'warning')
 			return redirect(url_for('manga'))
 		
-		website = 'kissmanga' if 'kissmanga.org' in url else 'mangakakalot' if 'mangakakalot.com' in  url else 'manganato' if 'manganato.com' in url else 'mangaowl' if 'mangaowl.com' in url else 'nhentai' if 'nhentai.com' in url else 'readm.org' if 'readm.org' in url else None
+		website = 'kissmanga' if 'kissmanga.org' in url else 'mangakakalot' if 'mangakakalot.com' in  url else 'manganato' if 'manganato.com' in url else 'nhentai' if 'nhentai.com' in url else 'readm.org' if 'readm.org' in url else None # else 'mangaowl' if 'mangaowl.com' in url 
 
 		if website == None:
-			flash(f'This URL is not supported!' , 'error')
+			flash(f'This Website is not supported!' , 'error')
 			return redirect(url_for('manga'))
 		
 		if 'sauce' in request.form:
@@ -72,6 +73,7 @@ def manga(url):
 			
 		if 'allTheChapters' in request.form:
 			allTheChapters=request.form['allTheChapters']
+			#mangaDownloader.Downloader.getPages( website , url , request.form['sauce'])
 		else:
 			if 'from' in request.form:
 				from_=request.form['from']
@@ -79,6 +81,7 @@ def manga(url):
 			if 'to' in request.form:
 				to_=request.form['to']
 				if to_ == '': to_=None
+
 		if website != 'nhentai':
 			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , description=desc , chapters=chapters , cover=cover)
 		else:

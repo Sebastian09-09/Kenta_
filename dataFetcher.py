@@ -1,6 +1,6 @@
 import requests 
 from bs4 import BeautifulSoup
-from urllib.request import Request, urlopen
+#from urllib.request import Request, urlopen
 from PIL import Image
 import os 
 
@@ -22,14 +22,15 @@ class Fetcher:
 				htmlText = requests.get(url , stream=True , headers=header)
 				response = htmlText.status_code
 				htmlText = htmlText.text
+			'''
 			else:
 				r=Request(url, headers={'User-Agent': 'Mozilla/5.0'})
 				x=urlopen(r)
 				htmlText=str(x.read() , 'utf-8')
 				response = x.status
-			
+			'''
 			if response == 200 and website != None:
-				htmlText = htmlText
+				#htmlText = htmlText
 				soup = BeautifulSoup(htmlText , 'lxml')
 				if website == 'kissmanga':
 					name = soup.find( class_='bigChar' )
