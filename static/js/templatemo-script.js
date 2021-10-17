@@ -69,30 +69,29 @@ var websites = {
     0: ['kissmanga.org.png' , '350' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
     1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot'],
     2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato'],
-    3: ['mangaowl.png' , '70' , 'Read english manga online free with a huge collections at Manga Owl, update fastest, most full, synthesized, translate free with high-quality images. The best place to read the updated latest, greatest, best-quality english manga for FREE with our best service. Enjoy!' , 'MangaOwl'],
-    4: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
-    5: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org'],
+    3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
+    4: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org'],
 };
 function increment(){
-    if (currentWebpage < 5){
+    if (currentWebpage < 4){
         currentWebpage = currentWebpage + 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/5'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML = self.websites[currentWebpage][3]
-        document.getElementById("grab").style.height = "100%";
+        fix()
     }
 }
 function decrement(){
     if (currentWebpage >= 1){
         currentWebpage = currentWebpage - 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/5'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML = self.websites[currentWebpage][3]
-        document.getElementById("grab").style.height = "100%";
+        fix()
     }
 }
 function fix(){
@@ -100,11 +99,53 @@ function fix(){
 }
 function Start() {
     if (document.getElementById("checkbox_").checked){
+        textSequence(0);
         document.getElementById("loading").style.display = "block";
-        document.getElementById("grab").style.height = "100%";
     }
 }
 function Fetch() {
+    textSequence(0);
     document.getElementById("loading").style.display = "block";
-    document.getElementById("grab").style.height = "100%";
+}
+
+var loading = ['Loading', 'lOading', 'loAding', 'loaDing' , 'loadIng', 'loadiNg' , 'loadinG'];
+
+
+function textSequence(i) {
+  if (loading.length > i) {
+    setTimeout(function() {
+      document.getElementById("seq").innerHTML = loading[i];
+      textSequence(++i);
+    }, 130);
+  } else if (loading.length == i) { // Loop
+    textSequence(0);
+  }
+}
+
+function readMore() {
+    var dots = document.getElementById("dots");
+    var moreText = document.getElementById("more");
+    var btnText = document.getElementById("myBtn");
+  
+    if (dots.style.display === "none") {
+      dots.style.display = "inline";
+      btnText.innerHTML = "Read more"; 
+      moreText.style.display = "none";
+    } else {
+      dots.style.display = "none";
+      btnText.innerHTML = "Read less"; 
+      moreText.style.display = "inline";
+    }
+
+    
+    if (document.body.scrollWidth >= 768){
+        var height = document.getElementById('grab').clientHeight;
+        document.getElementById("handle").style.borderTop = String(height)+'px solid transparent';
+        document.getElementById("handle").style.borderLeft = 0;
+    }else{
+        var width = document.getElementById('grab').clientWidth;
+        document.getElementById("handle").style.borderLeft = String(width)+'px solid transparent';
+        document.getElementById("handle").style.borderTop = 0;
+    }
+    fix()
 }
