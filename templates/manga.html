@@ -103,7 +103,7 @@
 										<p>Website : {{website}} </p>
 										<p>Title : {{name}} </p>
 										{% if website != 'nhentai' %}
-											<p>Latest Chapter : {{chapters}}</p>
+											<p>Latest Chapter : {{firstChap}}</p>
 										{% endif %}
 									</div> 
 								</div>
@@ -113,11 +113,31 @@
 									Description : {{description[:100]}}<span id="dots">...</span><span id="more">{{description[100:]}}</span>
 									</p>
 									<p onclick="readMore()" id="myBtn">Read more</p>
+
+									<!--
 									<p>from chapter : <input type="text" name="from" class="form-control"  autocomplete="off" min="0"/></p>
 									<p>to chapter : <input type="text" name="to" class="form-control" autocomplete="off" min="0"/> </p>
 									<p> <input type="checkbox" name="allTheChapters" value="True"> Fetch All the Chapters </p>
+									-->
+									<p>
+										<label for="chapter">Choose a chapter to download:</label>
+										<select name="chapter" id="chapter">
+											{% for i in chapters %}
+												{% if website == 'kissmanga' %}
+													  <option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split('-')[-1]}}</option>
+												{% elif website == 'readm.org' %}
+													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+												{% elif website == 'manganato' %}
+													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+												{% elif website == 'mangakakalot' %}
+													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+												  {% endif %}
+											{% endfor %}
+										</select>
+									</p>
 								{% endif %}
 								<p>Everything looks good ? <input required="" id="checkbox_" type="checkbox" name="url" value="{{placeholder}}"> </p>
+								
 							{% endif %}
 							<div class="text-right">
 								<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
