@@ -356,6 +356,11 @@ textarea {
     .tm-service-text { margin-top: 20px; }
     .tm-service-img { margin-right: 0; }
     .tm-service-img-r { margin-left: 0; }
+    .tm-slogon {
+        font-weight: 500;
+        font-style: italic;
+        font-size: 19px;
+    }
 }
 
 .closebtn:hover{
@@ -400,4 +405,8 @@ textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 5px;
+}
+#option , #chapter{
+    background-color: #2C353C;
+    width: 100%;
 }
