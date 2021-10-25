@@ -66,7 +66,7 @@ $(document).ready(function () {
 
 var currentWebpage = 0;
 var websites = {
-    0: ['kissmanga.org.png' , '350' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
+    0: ['kissmanga.org.png' , '290' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
     1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot'],
     2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato'],
     3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
@@ -137,15 +137,20 @@ function readMore() {
       moreText.style.display = "inline";
     }
 
-    
+    fixit()
+}
+
+function fixit() {
     if (document.body.scrollWidth >= 768){
         var height = document.getElementById('grab').clientHeight;
         document.getElementById("handle").style.borderTop = String(height)+'px solid transparent';
         document.getElementById("handle").style.borderLeft = 0;
     }else{
         var width = document.getElementById('grab').clientWidth;
+        console.log(width)
         document.getElementById("handle").style.borderLeft = String(width)+'px solid transparent';
         document.getElementById("handle").style.borderTop = 0;
     }
     fix()
 }
+window.onresize = fixit;
