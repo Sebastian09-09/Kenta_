@@ -7,7 +7,9 @@ import urllib.parse
 
 class Downloader:
 	@staticmethod
-	def getPages(name , website , url  , sauce , allTheChapters , from_ , to_ ):
+	def getPages(name , website , url  , sauce):
+		pages = {} 
+
 		referer = 'https://kissmanga.org' if website == 'kissmanga' else 'https://mangakakalot.com' if website == 'mangakakalot' else 'https://manganato.com' if website == 'manganato' else 'https://cdn.nhentai.com' if website == 'nhentai' else 'https://readm.org' if website == 'readm.org' else None
 		header={
 				'User-Agent': 'Mozilla/5.0',
@@ -20,46 +22,183 @@ class Downloader:
 			soup = BeautifulSoup(htmlText , 'lxml')
 			#for kissmanga
 			if website == 'kissmanga':
-				rawChapters = soup.find( class_='listing listing8515 full' )
-				chapters = {}
-				for i in rawChapters:
+				pages_ = soup.find(id='centerDivVideo')
+				index = 0
+				for i in pages_:
 					try:
-						key = Downloader.clear(i.a.text.strip())
-						chapters[key] = ('https://kissmanga.org'+i.a.attrs['href'] , i.a.text.strip() )
+						pages[index] = i.attrs['src']
+						index += 1
 					except:
 						pass
-				chapters = dict(reversed(list(chapters.items())))
-				print(chapters)
-				if allTheChapters:
-					pass
-				else:
-					pass
-
-			if website == 'mangakakalot':
-				pass
-			if website == 'manganato':
-				pass
-			if website == 'nhentai':
-				pass
-			if website == 'readm.org':
-				pass
-
+				pagesData=Downloader.getBin(pages , referer)
+				print(pages)
+				print(pagesData)
 				
 
+			if website == 'mangakakalot':
+				pages_ = str(soup.find( class_='container-chapter-reader'))
+				tempPages = pages_.strip().split('<img ')
+				index = 0
+				for i in tempPages:
+					if i != '' and 'src=' in i:
+						for j in i.split(' '):
+							if 'src=' in j:
+								pages[index] = j.strip('src=').strip('"')
+								index += 1
+								break
+				pagesData=Downloader.getBin(pages , referer)
+				print(pages)
+				print(pagesData)
+
+				
+			if website == 'manganato':
+				pages_ = str(soup.find( class_='container-chapter-reader'))
+				tempPages = pages_.strip().split('<img ')
+				index = 0
+				for i in tempPages:
+					if i != '' and 'src=' in i:
+						for j in i.split(' '):
+							if 'src=' in j:
+								pages[index] = j.strip('src=').strip('"')
+								index += 1
+								break
+				pagesData=Downloader.getBin(pages , referer)
+				print(pages)
+				print(pagesData)
+
+
+			if website == 'nhentai':
+				d= {}
+				keepRunning = [True]
+				killFrom = [0]
+				pass_ = [True]
+				baseUrl = f'https://cdn.nhentai.com/nhe/storage/images/{sauce}/'
+
+				def get(page):
+					url = baseUrl+f'{page}.jpg' 
+					print(url)
+					header = {
+								'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
+								'Accept-Encoding': 'gzip, deflate, br',
+								'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+											'Version/13.1.2 Safari/605.1.15',
+								'Accept-Language': 'en-ca', 'Referer': referer,
+								'Connection': 'keep-alive'
+							}
+
+					r = requests.get(url , headers=header)
+					print('----------> Page ',  page , '- ', r)
+					if r.status_code == 200:
+						pages[page] = r
+						print('----------------------->', r, ' for ' , url , ' page ' , page)
+					else:
+						url = baseUrl+f'{page}.png' 
+						r = requests.get(url , headers=header)
+						print('----------> Page ',  page , '- ', r)
+						if r.status_code == 200:
+							pages[page] = r
+							print('----------------------->', r, ' for ' , url , ' page ' , page)
+						else:
+							keepRunning[0] = False
+							if pass_[0]:
+								killFrom[0] = page
+								pass_[0] = False
+
+				def run():
+					page = 1
+					while keepRunning[0]:
+						time.sleep(0.5)
+						print(f'Starting Thread {page}')
+						d['x'+str(page)] = threading.Thread(target=get , args=(page,)) 
+						d['x'+str(page)].start()
+						page += 1
+						
+				run()
+				for i in range(1,killFrom[0]):
+					d['x'+str(i)].join()
+					print(f'Ending Thread {i}')
+
+				for i in range(1,killFrom[0]):
+					if i not in pages:
+						print('Failed to Fetch page ',i)
+						print('retrying...')
+						url = baseUrl+f'{i}.jpg' 
+						header = {
+								'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
+								'Accept-Encoding': 'gzip, deflate, br',
+								'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+											'Version/13.1.2 Safari/605.1.15',
+								'Accept-Language': 'en-ca', 'Referer': referer,
+								'Connection': 'keep-alive'
+							}
+						r = requests.get(url , headers=header)
+						print('----------> Page ',  i , '- ', r)
+						if r.status_code == 200:
+							pages[i] = r
+							print('----------------------->', r, ' for ' , url , ' page ' , i)
+						else:
+							url = baseUrl+f'{i}.png'
+							r = requests.get(url , headers=header)
+							if r.status_code == 200:
+								pages[i] = r
+								print('----------------------->', r, ' for ' , url , ' page ' , i)
+							else:
+								print('Failed!')
+
+				print(pages)
+
+
+
+
+			if website == 'readm.org':
+				pages_ = soup.find( class_='ch-images ch-image-container' )
+				images = pages_.find_all( 'img' )
+				index = 0
+				for i in images:
+					pages[index] = 'https://readm.org'+i.attrs['src']
+					index += 1
+				pagesData=Downloader.getBin(pages , referer)	
+				print(pages)
+				print(pagesData)
+					
+
 		
 
-	def toPdf(imagesDict):
+	def toPdf(name , imagesDict , imagesData):
 		pass
+
+	def getBin(pages , referer):
+		d={}
+		pagesData = {}
+		def get(url):
+			header = {
+						'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
+						'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+									'Version/13.1.2 Safari/605.1.15',
+						'Accept-Language': 'en-ca', 'Referer': referer,
+						'Connection': 'keep-alive'
+					}
+			r = requests.get(url , headers=header)
+			if r.status_code == 200:
+				pagesData[url] = r
+			print(r , 'for' , url)
+
+		def run():
+			index = 1
+			for i in list(pages.values()):
+				#time.sleep(0.1)
+				print(f'Starting thread {index}')
+				d['x'+str(index)] = threading.Thread(target=get , args=(i,)) 
+				d['x'+str(index)].start()
+				index += 1
+		run()
+		for i in range(1 , len(pages)+1):
+			d['x'+str(i)].join()
+			print(f'Ending Thread {i}')
+
+		return pagesData
 		
-	@staticmethod
-	def clear(string):
-		newString = ''
-		for i in string:
-			if i != ' ':
-				newString += i
-		newString = newString.lower().replace('\n', '')
-		return newString
 
 
-x=Downloader.getPages( 'yesm' , 'kissmanga' ,  'https://kissmanga.org/manga/manga-ho985297/' , '' , True , None , None) 
-print(x)
+#x=Downloader.getPages( 'yesm' , 'nhentai' ,  'https://nhentai.com/en/comic/lithium-ongoing-1' , '377242') 
+#print(x)

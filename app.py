@@ -47,9 +47,10 @@ def manga(url):
 			return redirect(url_for('manga'))
 		
 		if 'sauce' in request.form:
-			info = dataFetcher.Fetcher.getInfo(website, url, request.form['sauce'])
-			absurl=str(url)+r"!@$%%$@!"+str(request.form['sauce'])
-			if website == 'nhentai' and request.form['sauce'] == '':
+			sauce = request.form['sauce']
+			info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+			absurl=str(url)+r"!@$%%$@!"+str(sauce)
+			if website == 'nhentai' and sauce == '':
 				flash(f'Please input the sauce too!' , 'warning')
 				return redirect(url_for('manga'))
 		else:
@@ -68,22 +69,22 @@ def manga(url):
 			desc = info[1]
 			chapters = info[2]
 			cover = info[3]
+			firstChap = list(chapters.keys())[-1]
 		else:
 			cover = info[1]
-			
-		if 'allTheChapters' in request.form:
-			allTheChapters=request.form['allTheChapters']
-			#mangaDownloader.Downloader.getPages( website , url , request.form['sauce'])
-		else:
-			if 'from' in request.form:
-				from_=request.form['from']
-				if from_ == '': from_=None
-			if 'to' in request.form:
-				to_=request.form['to']
-				if to_ == '': to_=None
+		
+
+		if 'chapter' in request.form:
+			chapter = request.form['chapter'].split('@@@')
+			chapterName = chapter[0]
+			chapterUrl = chapter[1]
+			mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
+		
+		if website == 'nhentai' and 'sauce' not in request.form:
+			mangaDownloader.Downloader.getPages(name, website, url, sauce )
 
 		if website != 'nhentai':
-			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , description=desc , chapters=chapters , cover=cover)
+			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , description=desc , chapters=chapters , cover=cover , firstChap = firstChap  )
 		else:
 			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , cover=cover)			
 
