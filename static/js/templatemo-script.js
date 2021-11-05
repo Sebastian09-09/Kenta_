@@ -66,11 +66,11 @@ $(document).ready(function () {
 
 var currentWebpage = 0;
 var websites = {
-    0: ['kissmanga.org.png' , '290' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga'],
-    1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot'],
-    2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato'],
-    3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai'],
-    4: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org'],
+    0: ['kissmanga.org.png' , '290' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga' , 'https://kissmanga.org/'],
+    1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot' , 'https://mangakakalot.com/'],
+    2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato' , 'https://manganato.com/'],
+    3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai' , 'https://nhentai.com/'],
+    4: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
 };
 function increment(){
     if (currentWebpage < 4){
@@ -79,7 +79,7 @@ function increment(){
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
-        document.getElementById('title').innerHTML = self.websites[currentWebpage][3]
+        document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
         fix()
     }
 }
@@ -90,7 +90,7 @@ function decrement(){
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
-        document.getElementById('title').innerHTML = self.websites[currentWebpage][3]
+        document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
         fix()
     }
 }
@@ -147,7 +147,6 @@ function fixit() {
         document.getElementById("handle").style.borderLeft = 0;
     }else{
         var width = document.getElementById('grab').clientWidth;
-        console.log(width)
         document.getElementById("handle").style.borderLeft = String(width)+'px solid transparent';
         document.getElementById("handle").style.borderTop = 0;
     }
