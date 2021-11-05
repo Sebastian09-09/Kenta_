@@ -410,3 +410,11 @@ textarea {
     background-color: #2C353C;
     width: 100%;
 }
+
+.links:hover{
+    color: crimson;
+}
+
+a{
+    color: rgb(201, 201, 201);
+}
