@@ -48,17 +48,17 @@ def manga(url):
 		
 		if 'sauce' in request.form:
 			sauce = request.form['sauce']
-			info = dataFetcher.Fetcher.getInfo(website, url, sauce)
-			absurl=str(url)+r"!@$%%$@!"+str(sauce)
 			if website == 'nhentai' and sauce == '':
 				flash(f'Please input the sauce too!' , 'warning')
 				return redirect(url_for('manga'))
+			info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+			absurl=str(url)+r"!@$%%$@!"+str(sauce)
 		else:
-			info = dataFetcher.Fetcher.getInfo(website, url, sauce)
-			absurl=str(url)+r"!@$%%$@!"+str(sauce)
 			if website == 'nhentai' and sauce == '':
 				flash(f'Please input the sauce too!' , 'warning')
 				return redirect(url_for('manga'))
+			info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+			absurl=str(url)+r"!@$%%$@!"+str(sauce)
 		
 		name = info[0]
 		if name == '<!Failed!>':
@@ -77,7 +77,7 @@ def manga(url):
 		if 'chapter' in request.form:
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
-			chapterUrl = chapter[1]
+			chapterUrl = chapter[1].replace('"' , ' ').strip()
 			mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
