@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 #SETTINGS
 app.config.update(
-	SECRET_KEY='HIDETHISSHIT',
+	SECRET_KEY=os.environ['SECRET_KEY'],
 	SESSION_COOKIE_SECURE=True,
 	REMEMBER_COOKIE_SECURE=True,
 	SESSION_COOKIE_HTTPONLY=True,
