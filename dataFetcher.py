@@ -108,7 +108,8 @@ class Fetcher:
 					return(str(name).split('h2')[1].split('</i>')[1].rstrip('</').strip()  , str(desc).split('</span>')[1].rstrip('</div>').strip() , chapter , image)
 				'''
 				if website == 'nhentai':
-					name = htmlText.split('<title>')[1].split('</title>')[0].rstrip('- Comic | nHentai').strip()
+					#name = htmlText.split('<title>')[1].split('</title>')[0].rstrip('- Comic | nHentai').strip()
+					name = soup.find('title').text.rstrip('- Comic | nHentai').strip()
 					if 'Ongoing' in name:
 						name = name.rstrip('(Ongoing)')
 					if name == '':
