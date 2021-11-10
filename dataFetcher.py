@@ -7,7 +7,7 @@ import os
 class Fetcher:
 	@staticmethod
 	def getInfo(website , url , sauce):
-		
+		try:
 			if website == 'readm.org':
 				ext='/'
 			elif website == 'kissmanga':
@@ -108,8 +108,7 @@ class Fetcher:
 					return(str(name).split('h2')[1].split('</i>')[1].rstrip('</').strip()  , str(desc).split('</span>')[1].rstrip('</div>').strip() , chapter , image)
 				'''
 				if website == 'nhentai':
-					#name = htmlText.split('<title>')[1].split('</title>')[0].rstrip('- Comic | nHentai').strip()
-					name = soup.find('title').text.rstrip('- Comic | nHentai').strip()
+					name = soup.find('title').text.split('- Comic | nHentai')[0].strip()
 					if 'Ongoing' in name:
 						name = name.rstrip('(Ongoing)')
 					if name == '':
@@ -129,7 +128,8 @@ class Fetcher:
 				return('<!Failed!>' , )
 		
 		
-		
+		except:
+			return('<!Failed!>' , )
 		
 			
 #details=Fetcher.getInfo('manganato' , 'https://mangaowl.com/single/71513/brave-star-romantics' , None)
