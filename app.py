@@ -2,6 +2,7 @@ from flask import Flask ,  render_template , request , redirect , url_for , flas
 import requests
 import dataFetcher
 import mangaDownloader
+import os
 app = Flask(__name__)
 
 #SETTINGS
