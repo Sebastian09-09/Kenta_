@@ -25,6 +25,7 @@ def services():
 	return render_template('services.html')
 
 
+
 #MANGA
 @app.route("/manga/" , defaults={'url' : ' '} , methods=["GET","POST"])
 @app.route("/manga/<url>/" , methods=["GET","POST"])
@@ -79,10 +80,14 @@ def manga(url):
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
 			chapterUrl = chapter[1].replace('"' , ' ').strip()
-			mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce])
+			thr.start()
+			#mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			mangaDownloader.Downloader.getPages(name, website, url, sauce )
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , url ,  sauce])
+			thr.start()
+			#mangaDownloader.Downloader.getPages(name, website, url, sauce )
 
 		if website != 'nhentai':
 			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , description=desc , chapters=chapters , cover=cover , firstChap = firstChap  )
