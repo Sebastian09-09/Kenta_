@@ -3,6 +3,8 @@ import requests
 import dataFetcher
 import mangaDownloader
 import os
+from threading import Thread
+
 app = Flask(__name__)
 
 #SETTINGS
