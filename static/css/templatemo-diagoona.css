@@ -368,6 +368,7 @@ textarea {
 }
 
 .closebtn{
+    font-size: inherit;
     float: right;
 }
 
