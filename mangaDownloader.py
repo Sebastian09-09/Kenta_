@@ -218,7 +218,7 @@ class Downloader:
 		def run():
 			index = 1
 			for i in list(pages.values()):
-				#time.sleep(0.1)
+				time.sleep(0.1)
 				print(f'Starting thread {index}')
 				d['x'+str(index)] = threading.Thread(target=get , args=(i,)) 
 				d['x'+str(index)].start()
