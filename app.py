@@ -87,7 +87,7 @@ def manga(url):
 			#mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , url ,  sauce])
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce])
 			thr.start()
 			#mangaDownloader.Downloader.getPages(name, website, url, sauce )
 
