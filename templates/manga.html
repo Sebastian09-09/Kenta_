@@ -146,7 +146,7 @@
 								{% if desc == 'Fetch' %}
 									<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
 								{% else %}
-									<a id="start" style="display:none;" onclick="{{desc}}()" href="{{url_for('downloads')}}" class="btn btn-big btn-primary">{{desc}}</a>
+									<a id="start" style="display:none;" onclick="{{desc}}()" target="_blank" class="btn btn-big btn-primary">{{desc}}</a>
 								{% endif %}
 
 							</div>
