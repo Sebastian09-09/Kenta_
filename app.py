@@ -19,18 +19,18 @@ app.config.update(
 #SESSIONS
 def addSession():
 	if session == {}:
-		dbs = os.listdir('static\downloads')	
+		dbs = os.listdir('static/downloads')	
 		db = random.randint(0,1000000001)
 		while db in dbs:
-			dbs = os.listdir('static\downloads')
+			dbs = os.listdir('static/downloads')
 			db = random.randint(0,1000000001)
-		os.mkdir(f'static\downloads\{db}')
+		os.mkdir(f'static/downloads/{db}')
 		session['databaseID'] = db
 	else:
 		dbid = session['databaseID']
-		dbs = os.listdir('static\downloads')
+		dbs = os.listdir('static/downloads')
 		if str(dbid) not in dbs:
-			os.mkdir(f'static\downloads\{dbid}')
+			os.mkdir(f'static/downloads/{dbid}')
 
 #HOME
 @app.route("/")
