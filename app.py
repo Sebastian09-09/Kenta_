@@ -130,6 +130,11 @@ def downloads():
 	addSession()
 	return 'your downloads will be here'
 
+#DOWNLOADS
+@app.route("/test/")
+def test():
+	return os.listdir()
+
 
 if __name__=='__main__':
 	app.run()
