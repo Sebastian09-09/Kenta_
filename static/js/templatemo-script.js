@@ -101,6 +101,7 @@ function Start() {
     if (document.getElementById("checkbox_").checked){
         textSequence(0);
         document.getElementById("loading").style.display = "block";
+        document.getElementById("contact-form").submit();
     }
 }
 function Fetch() {
@@ -152,4 +153,15 @@ function fixit() {
     }
     fix()
 }
+
+function toggleLink(checkBox)
+{
+    var link = document.getElementById("start");
+    
+    if (checkBox.checked)
+        link.style.display = "inline";
+    else
+        link.style.display = "none";
+}
+
 window.onresize = fixit;
