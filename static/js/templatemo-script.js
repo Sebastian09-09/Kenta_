@@ -158,10 +158,12 @@ function toggleLink(checkBox)
 {
     var link = document.getElementById("start");
     
-    if (checkBox.checked)
+    if (checkBox.checked){
         link.style.display = "inline";
-    else
+        link.href = '/downloads';
+    }else{
         link.style.display = "none";
+    }
 }
 
 window.onresize = fixit;
