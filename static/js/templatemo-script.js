@@ -80,7 +80,7 @@ function increment(){
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
-        fix()
+        fixit()
     }
 }
 function decrement(){
@@ -91,7 +91,7 @@ function decrement(){
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
-        fix()
+        fixit()
     }
 }
 function fix(){
