@@ -133,7 +133,7 @@ def downloads():
 #DOWNLOADS
 @app.route("/test/")
 def test():
-	return os.listdir()
+	return str(os.listdir())
 
 
 if __name__=='__main__':
