@@ -2,14 +2,16 @@ import requests
 import threading
 import time
 from bs4 import BeautifulSoup
+from requests.sessions import session
 import dataFetcher
 import urllib.parse
 from PIL import Image
 from io import BytesIO
+import os
 
 class Downloader:
 	@staticmethod
-	def getPages(name , website , url  , sauce , fullName):
+	def getPages(name , website , url  , sauce , fullName , databaseID):
 		print(url)
 		pages = {} 
 
@@ -34,7 +36,7 @@ class Downloader:
 					except:
 						pass
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData , website , fullName)
+				Downloader.toPdf(name , pages , pagesData , website , fullName , databaseID)
 
 			if website == 'mangakakalot':
 				pages_ = str(soup.find( class_='container-chapter-reader'))
@@ -48,7 +50,7 @@ class Downloader:
 								index += 1
 								break
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData , website , fullName)
+				Downloader.toPdf(name , pages , pagesData , website , fullName , databaseID)
 
 				
 			if website == 'manganato':
@@ -64,7 +66,7 @@ class Downloader:
 								index += 1
 								break
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData , website , fullName )
+				Downloader.toPdf(name , pages , pagesData , website , fullName , databaseID)
 
 
 			if website == 'nhentai':
@@ -145,7 +147,7 @@ class Downloader:
 							else:
 								print('Failed!')
 
-				Downloader.toPdf(name , pages , None , website , fullName)
+				Downloader.toPdf(name , pages , None , website , fullName , databaseID)
 
 
 
@@ -158,12 +160,13 @@ class Downloader:
 					pages[index] = 'https://readm.org'+i.attrs['src']
 					index += 1
 				pagesData=Downloader.getBin(pages , referer)	
-				Downloader.toPdf(name , pages , pagesData , website , fullName)
+				Downloader.toPdf(name , pages , pagesData , website , fullName , databaseID)
 					
 
 		
 
-	def toPdf(name , imagesDict , imagesData , website , fullName):
+	def toPdf(name , imagesDict , imagesData , website , fullName , databaseID):
+		dbid = databaseID
 		if imagesData != None:
 			tempIndex = list(imagesDict.keys())
 			index = list(map(lambda x:int(x) , tempIndex));index.sort()
@@ -178,14 +181,15 @@ class Downloader:
 				im = img.convert('RGB')
 				if i != 0:
 					imageList.append(im)
+
 			if website == 'kissmanga':
 				savedAs = str(website)+'-'+str(name)
 				savedAs=Downloader.clearName(savedAs)
-				im1.save(f'static/downloads/{savedAs}.pdf',save_all=True, append_images=imageList)
+				im1.save(f'static/downloads/{dbid}/{savedAs}.pdf',save_all=True, append_images=imageList)
 			else:
 				savedAs = str(website)+'-'+str(fullName)+'-'+str(name)
 				savedAs=Downloader.clearName(savedAs)
-				im1.save(f'static/downloads/{savedAs}.pdf',save_all=True, append_images=imageList)
+				im1.save(f'static/downloads/{dbid}/{savedAs}.pdf',save_all=True, append_images=imageList)
 			print(savedAs)
 
 		else:
@@ -201,7 +205,8 @@ class Downloader:
 				im = img.convert('RGB')
 				if i != 1:
 					imageList.append(im)
-			im1.save(f'static/downloads/nhentai-{name}.pdf',save_all=True, append_images=imageList)
+
+			im1.save(f'static/downloads/{dbid}/nhentai-{name}.pdf',save_all=True, append_images=imageList)
 
 
 

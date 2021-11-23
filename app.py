@@ -1,9 +1,10 @@
-from flask import Flask ,  render_template , request , redirect , url_for , flash
+from flask import Flask ,  render_template , request , redirect , url_for , flash , session
 import dataFetcher
 import mangaDownloader
 app = Flask(__name__)
 import os 
 from threading import Thread
+import random
 
 
 #SETTINGS
@@ -14,6 +15,23 @@ app.config.update(
 	SESSION_COOKIE_HTTPONLY=True,
 	REMEMBER_COOKIE_HTTPONLY=True
 )
+
+#SESSIONS
+def addSession():
+	if session == {}:
+		dbs = os.listdir('static\downloads')	
+		db = random.randint(0,1000000001)
+		while db in dbs:
+			dbs = os.listdir('static\downloads')
+			db = random.randint(0,1000000001)
+		os.mkdir(f'static\downloads\{db}')
+		session['databaseID'] = db
+	else:
+		dbid = session['databaseID']
+		dbs = os.listdir('static\downloads')
+		if str(dbid) not in dbs:
+			os.mkdir(f'static\downloads\{dbid}')
+
 #HOME
 @app.route("/")
 def home():
@@ -30,6 +48,7 @@ def services():
 @app.route("/manga/" , defaults={'url' : ' '} , methods=["GET","POST"])
 @app.route("/manga/<url>/" , methods=["GET","POST"])
 def manga(url):
+	addSession()
 	if request.method == "GET":
 		return render_template('manga.html' , placeholder="url" , desc='Fetch')
 	else:
@@ -80,12 +99,12 @@ def manga(url):
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
 			chapterUrl = chapter[1].replace('"' , ' ').strip()
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name])
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
 			thr.start()
 			#mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce , name])
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
 			thr.start()
 			#mangaDownloader.Downloader.getPages(name, website, url, sauce )
 
@@ -108,6 +127,7 @@ def contact():
 #DOWNLOADS
 @app.route("/downloads/")
 def downloads():
+	addSession()
 	return 'your downloads will be here'
 
 
