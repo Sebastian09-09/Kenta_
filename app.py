@@ -130,6 +130,18 @@ def downloads():
 	addSession()
 	return 'your downloads will be here'
 
+#DATABASE DETAILS
+@app.route("/database/")
+def database():
+	text = ''
+	dbs = os.listdir('static/downloads')
+	for db in dbs:
+		if db != 'note':
+			text += '----->'+db+'<br>'
+			manga = os.listdir(f'static/downloads/{db}')
+			for j in manga:
+				text += '---------->'+j+'<br>'
+	return text
 
 if __name__=='__main__':
 	app.run()
