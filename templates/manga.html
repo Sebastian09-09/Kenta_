@@ -134,16 +134,21 @@
 													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 												{% elif website == 'mangakakalot' %}
 													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
-												  {% endif %}
+												{% endif %}
 											{% endfor %}
 										</select>
 									</p>
 								{% endif %}
-								<p>Everything looks good ? <input required="" id="checkbox_" type="checkbox" name="url" value="{{placeholder}}"> </p>
+								<p>Everything looks good ? <input required="" id="checkbox_" type="checkbox" name="url" onchange="toggleLink(this);" value="{{placeholder}}"> </p>
 								
 							{% endif %}
 							<div class="text-right">
-								<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
+								{% if desc == 'Fetch' %}
+									<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
+								{% else %}
+									<a id="start" style="display:none;" onclick="{{desc}}()" href="{{url_for('downloads')}}" class="btn btn-big btn-primary">{{desc}}</a>
+								{% endif %}
+
 							</div>
 						</form>
 						
