@@ -19,7 +19,7 @@ app.config.update(
 #SESSIONS
 def addSession():
 	if session == {}:
-		dbs = os.listdir('\app\static\downloads')	
+		dbs = os.listdir('static\downloads')	
 		db = random.randint(0,1000000001)
 		while db in dbs:
 			dbs = os.listdir('static\downloads')
