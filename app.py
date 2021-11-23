@@ -9,7 +9,7 @@ import random
 
 #SETTINGS
 app.config.update(
-	SECRET_KEY=os.environ['SECRET_KEY'],
+	SECRET_KEY='HIDETHISSHIT',
 	SESSION_COOKIE_SECURE=True,
 	REMEMBER_COOKIE_SECURE=True,
 	SESSION_COOKIE_HTTPONLY=True,
@@ -19,18 +19,18 @@ app.config.update(
 #SESSIONS
 def addSession():
 	if session == {}:
-		dbs = os.listdir('static/downloads')	
+		dbs = os.listdir('static\downloads')	
 		db = random.randint(0,1000000001)
 		while db in dbs:
-			dbs = os.listdir('static/downloads')
+			dbs = os.listdir('static\downloads')
 			db = random.randint(0,1000000001)
-		os.mkdir(f'static/downloads/{db}')
+		os.mkdir(f'static\downloads\{db}')
 		session['databaseID'] = db
 	else:
 		dbid = session['databaseID']
-		dbs = os.listdir('static/downloads')
+		dbs = os.listdir('static\downloads')
 		if str(dbid) not in dbs:
-			os.mkdir(f'static/downloads/{dbid}')
+			os.mkdir(f'static\downloads\{dbid}')
 
 #HOME
 @app.route("/")
@@ -129,11 +129,6 @@ def contact():
 def downloads():
 	addSession()
 	return 'your downloads will be here'
-
-#DOWNLOADS
-@app.route("/test/")
-def test():
-	return str(os.listdir('static/downloads'))
 
 
 if __name__=='__main__':

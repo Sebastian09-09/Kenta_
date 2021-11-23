@@ -109,7 +109,7 @@ class Downloader:
 				def run():
 					page = 1
 					while keepRunning[0]:
-						time.sleep(0.2)
+						time.sleep(0.5)
 						print(f'Starting Thread {page}')
 						d['x'+str(page)] = threading.Thread(target=get , args=(page,)) 
 						d['x'+str(page)].start()
@@ -165,8 +165,7 @@ class Downloader:
 
 		
 
-	def toPdf(name , imagesDict , imagesData , website , fullName , databaseID):
-		dbid = databaseID
+	def toPdf(name , imagesDict , imagesData , website , fullName , dbid):
 		if imagesData != None:
 			tempIndex = list(imagesDict.keys())
 			index = list(map(lambda x:int(x) , tempIndex));index.sort()
