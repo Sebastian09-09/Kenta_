@@ -1,15 +1,14 @@
 from flask import Flask ,  render_template , request , redirect , url_for , flash
-import requests
 import dataFetcher
 import mangaDownloader
-import os
+app = Flask(__name__)
+import os 
 from threading import Thread
 
-app = Flask(__name__)
 
 #SETTINGS
 app.config.update(
-	SECRET_KEY=os.environ['SECRET_KEY'],
+	SECRET_KEY='HIDETHISSHIT',
 	SESSION_COOKIE_SECURE=True,
 	REMEMBER_COOKIE_SECURE=True,
 	SESSION_COOKIE_HTTPONLY=True,
@@ -25,7 +24,6 @@ def home():
 @app.route("/services/")
 def services():
 	return render_template('services.html')
-
 
 
 #MANGA
@@ -82,12 +80,12 @@ def manga(url):
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
 			chapterUrl = chapter[1].replace('"' , ' ').strip()
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce])
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name])
 			thr.start()
 			#mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce])
+			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce , name])
 			thr.start()
 			#mangaDownloader.Downloader.getPages(name, website, url, sauce )
 
@@ -106,6 +104,11 @@ def supportedwebsites():
 @app.route("/contact/")
 def contact():
 	return render_template('contact.html')
+
+#DOWNLOADS
+@app.route("/downloads/")
+def downloads():
+	return 'your downloads will be here'
 
 
 if __name__=='__main__':

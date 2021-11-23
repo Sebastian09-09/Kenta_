@@ -9,7 +9,7 @@ from io import BytesIO
 
 class Downloader:
 	@staticmethod
-	def getPages(name , website , url  , sauce):
+	def getPages(name , website , url  , sauce , fullName):
 		print(url)
 		pages = {} 
 
@@ -34,7 +34,7 @@ class Downloader:
 					except:
 						pass
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData)
+				Downloader.toPdf(name , pages , pagesData , website , fullName)
 
 			if website == 'mangakakalot':
 				pages_ = str(soup.find( class_='container-chapter-reader'))
@@ -48,7 +48,7 @@ class Downloader:
 								index += 1
 								break
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData)
+				Downloader.toPdf(name , pages , pagesData , website , fullName)
 
 				
 			if website == 'manganato':
@@ -64,7 +64,7 @@ class Downloader:
 								index += 1
 								break
 				pagesData=Downloader.getBin(pages , referer)
-				Downloader.toPdf(name , pages , pagesData)
+				Downloader.toPdf(name , pages , pagesData , website , fullName )
 
 
 			if website == 'nhentai':
@@ -107,7 +107,7 @@ class Downloader:
 				def run():
 					page = 1
 					while keepRunning[0]:
-						#time.sleep(0.2)
+						time.sleep(0.5)
 						print(f'Starting Thread {page}')
 						d['x'+str(page)] = threading.Thread(target=get , args=(page,)) 
 						d['x'+str(page)].start()
@@ -145,7 +145,7 @@ class Downloader:
 							else:
 								print('Failed!')
 
-				Downloader.toPdf(name , pages , None)
+				Downloader.toPdf(name , pages , None , website , fullName)
 
 
 
@@ -158,14 +158,13 @@ class Downloader:
 					pages[index] = 'https://readm.org'+i.attrs['src']
 					index += 1
 				pagesData=Downloader.getBin(pages , referer)	
-				Downloader.toPdf(name , pages , pagesData)
+				Downloader.toPdf(name , pages , pagesData , website , fullName)
 					
 
 		
 
-	def toPdf(name , imagesDict , imagesData):
+	def toPdf(name , imagesDict , imagesData , website , fullName):
 		if imagesData != None:
-			name=Downloader.clearName(name)
 			tempIndex = list(imagesDict.keys())
 			index = list(map(lambda x:int(x) , tempIndex));index.sort()
 
@@ -179,8 +178,15 @@ class Downloader:
 				im = img.convert('RGB')
 				if i != 0:
 					imageList.append(im)
-			im1.save(f'static/downloads/{name}.pdf',save_all=True, append_images=imageList)
-
+			if website == 'kissmanga':
+				savedAs = str(website)+'-'+str(name)
+				savedAs=Downloader.clearName(savedAs)
+				im1.save(f'static/downloads/{savedAs}.pdf',save_all=True, append_images=imageList)
+			else:
+				savedAs = str(website)+'-'+str(fullName)+'-'+str(name)
+				savedAs=Downloader.clearName(savedAs)
+				im1.save(f'static/downloads/{savedAs}.pdf',save_all=True, append_images=imageList)
+			print(savedAs)
 
 		else:
 			name=Downloader.clearName(name)
@@ -195,7 +201,7 @@ class Downloader:
 				im = img.convert('RGB')
 				if i != 1:
 					imageList.append(im)
-			im1.save(f'static/downloads/{name}.pdf',save_all=True, append_images=imageList)
+			im1.save(f'static/downloads/nhentai-{name}.pdf',save_all=True, append_images=imageList)
 
 
 
