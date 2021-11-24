@@ -4,6 +4,8 @@ import mangaDownloader
 app = Flask(__name__)
 import os 
 from threading import Thread
+
+import string
 import random
 
 
@@ -20,12 +22,13 @@ app.config.update(
 def addSession():
 	if session == {}:
 		dbs = os.listdir('static/downloads')	
-		db = random.randint(0,1000000001)
+		db = str(random.randint(0,1000000001))+str(''.join(random.choices(string.ascii_uppercase + string.digits, k = 5)))
 		while db in dbs:
 			dbs = os.listdir('static/downloads')
-			db = random.randint(0,1000000001)
+			db = str(random.randint(0,1000000001))+str(''.join(random.choices(string.ascii_uppercase + string.digits, k = 5)))
 		os.mkdir(f'static/downloads/{db}')
 		session['databaseID'] = db
+		print(db)
 	else:
 		dbid = session['databaseID']
 		dbs = os.listdir('static/downloads')
