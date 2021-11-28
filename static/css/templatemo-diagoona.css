@@ -419,3 +419,11 @@ textarea {
 a{
     color: rgb(201, 201, 201);
 }
+
+.special{
+    background-color:aqua;
+    transition: ease-in-out 500ms;
+}
+.special:hover{
+    background-color: crimson;
+}
