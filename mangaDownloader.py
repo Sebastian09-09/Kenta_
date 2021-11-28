@@ -109,7 +109,7 @@ class Downloader:
 				def run():
 					page = 1
 					while keepRunning[0]:
-						time.sleep(0.2)
+						time.sleep(0.5)
 						print(f'Starting Thread {page}')
 						d['x'+str(page)] = threading.Thread(target=get , args=(page,)) 
 						d['x'+str(page)].start()
