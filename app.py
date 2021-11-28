@@ -5,13 +5,13 @@ app = Flask(__name__)
 import os 
 from threading import Thread
 
-import string
 import random
+import string
 
 
 #SETTINGS
 app.config.update(
-	SECRET_KEY=os.environ['SECRET_KEY'],
+	SECRET_KEY='HIDETHISSHIT',
 	SESSION_COOKIE_SECURE=True,
 	REMEMBER_COOKIE_SECURE=True,
 	SESSION_COOKIE_HTTPONLY=True,
@@ -60,7 +60,7 @@ def manga(url):
 			temp=url.split(r'!@$%%$@!')
 			url=temp[0]
 			sauce=temp[1]
-		if url == '':
+		if url == '' or not url.startswith('http'):
 			flash(f'Please provide a URL' , 'warning')
 			return redirect(url_for('manga'))
 		
@@ -145,6 +145,7 @@ def database():
 			for j in manga:
 				text += '---------->'+j+'<br>'
 	return text
+
 
 if __name__=='__main__':
 	app.run()
