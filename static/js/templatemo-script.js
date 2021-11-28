@@ -101,7 +101,7 @@ function Start() {
     if (document.getElementById("checkbox_").checked){
         textSequence(0);
         document.getElementById("loading").style.display = "block";
-        document.getElementById("contact-form").submit();
+        //document.getElementById("contact-form").submit();
     }
 }
 function Fetch() {
@@ -160,10 +160,10 @@ function toggleLink(checkBox)
     
     if (checkBox.checked){
         link.style.display = "inline";
-        link.href = '/downloads';
     }else{
         link.style.display = "none";
     }
+    fixit()
 }
 
 window.onresize = fixit;
