@@ -19,6 +19,12 @@ app.config.update(
 	REMEMBER_COOKIE_HTTPONLY=True
 )
 
+#USER
+def getUser():
+	with open('user.json' , 'r') as f:
+		data = json.load(f)
+	return data['user']
+
 #SESSIONS
 def addSession():
 	if session == {}:
@@ -103,13 +109,22 @@ def manga(url):
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
 			chapterUrl = chapter[1].replace('"' , ' ').strip()
-			thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
-			thr.start()
+			if getUser() == 'localhost':
+				thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
+				thr.start()
+			else:
+				thr = Thread(target=mangaDownloaderServer.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
+				thr.start()
+
 			#mangaDownloaderUser.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
-			thr.start()
+			if getUser() == 'localhost':
+				thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
+				thr.start()
+			else:
+				thr = Thread(target=mangaDownloaderServer.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
+				thr.start()
 			#mangaDownloaderUser.Downloader.getPages(name, website, url, sauce )
 
 		if website != 'nhentai':
@@ -146,6 +161,7 @@ def database():
 			for j in manga:
 				text += '---------->'+j+'<br>'
 	return text
+
 
 if __name__=='__main__':
 	app.run()
