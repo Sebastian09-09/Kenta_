@@ -8,6 +8,7 @@ from threading import Thread
 import random
 import string
 
+import requests 
 
 #SETTINGS
 app.config.update(
@@ -146,6 +147,16 @@ def database():
 				text += '---------->'+j+'<br>'
 	return text
 
+#TEST
+@app.route("/test/")
+def test():
+	temp = []
+	for i in range(1,209):
+		r = requests.get(f'https://cdn.nhentai.com/nhe/storage/thumbnails/56636/{i}.jpg')
+		print(r , 'for page ' , i)
+		temp.append(r)
+		
+	return temp
 
 if __name__=='__main__':
 	app.run()
