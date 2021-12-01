@@ -1,6 +1,6 @@
 from flask import Flask ,  render_template , request , redirect , url_for , flash , session
 import dataFetcher
-import mangaDownloader
+import mangaDownloaderUser
 app = Flask(__name__)
 import os 
 from threading import Thread
@@ -101,14 +101,14 @@ def manga(url):
 			chapter = request.form['chapter'].split('@@@')
 			chapterName = chapter[0]
 			chapterUrl = chapter[1].replace('"' , ' ').strip()
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
+			thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
 			thr.start()
-			#mangaDownloader.Downloader.getPages(chapterName, website, chapterUrl, sauce )
+			#mangaDownloaderUser.Downloader.getPages(chapterName, website, chapterUrl, sauce )
 		
 		if website == 'nhentai' and 'sauce' not in request.form:
-			thr = Thread(target=mangaDownloader.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
+			thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
 			thr.start()
-			#mangaDownloader.Downloader.getPages(name, website, url, sauce )
+			#mangaDownloaderUser.Downloader.getPages(name, website, url, sauce )
 
 		if website != 'nhentai':
 			return render_template('manga.html'  , placeholder=absurl , desc='Start' , website=website , name=name , description=desc , chapters=chapters , cover=cover , firstChap = firstChap  )
