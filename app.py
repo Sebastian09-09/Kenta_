@@ -156,7 +156,7 @@ def test():
 		print(r , 'for page ' , i)
 		temp.append(r)
 		
-	return temp
+	return str(temp)
 
 if __name__=='__main__':
 	app.run()
