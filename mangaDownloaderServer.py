@@ -1,6 +1,6 @@
 import requests 
 import threading
-import time
+#import time
 from bs4 import BeautifulSoup
 from requests.sessions import session
 import dataFetcher
@@ -70,83 +70,26 @@ class Downloader:
 
 
 			if website == 'nhentai':
-				d= {}
-				keepRunning = [True]
-				killFrom = [0]
-				pass_ = [True]
+				header = {
+						'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
+						'Accept-Encoding': 'gzip, deflate, br',
+						'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+											'Version/13.1.2 Safari/605.1.15',
+						'Accept-Language': 'en-ca', 'Referer': referer,
+						'Connection': 'keep-alive'
+					}
+				page = 1
 				baseUrl = f'https://cdn.nhentai.com/nhe/storage/images/{sauce}/'
-
-				def get(page):
-					url = baseUrl+f'{page}.jpg' 
-					print(url)
-					header = {
-								'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
-								'Accept-Encoding': 'gzip, deflate, br',
-								'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
-											'Version/13.1.2 Safari/605.1.15',
-								'Accept-Language': 'en-ca', 'Referer': referer,
-								'Connection': 'keep-alive'
-							}
-
-					r = requests.get(url , headers=header)
-					print('----------> Page ',  page , '- ', r)
-					if r.status_code == 200:
-						pages[page] = r
-						print('----------------------->', r, ' for ' , url , ' page ' , page)
-					else:
-						url = baseUrl+f'{page}.png' 
-						r = requests.get(url , headers=header)
-						print('----------> Page ',  page , '- ', r)
-						if r.status_code == 200:
-							pages[page] = r
-							print('----------------------->', r, ' for ' , url , ' page ' , page)
-						else:
-							keepRunning[0] = False
-							if pass_[0]:
-								killFrom[0] = page
-								pass_[0] = False
-
-				def run():
-					page = 1
-					while keepRunning[0]:
-						time.sleep(0.5)
-						print(f'Starting Thread {page}')
-						d['x'+str(page)] = threading.Thread(target=get , args=(page,)) 
-						d['x'+str(page)].start()
-						page += 1
-						
-				run()
-				for i in range(1,killFrom[0]):
-					d['x'+str(i)].join()
-					print(f'Ending Thread {i}')
-
-				for i in range(1,killFrom[0]):
-					if i not in pages:
-						print('Failed to Fetch page ',i)
-						print('retrying...')
-						url = baseUrl+f'{i}.jpg' 
-						header = {
-								'Accept': 'image/png,image/svg+xml,image/*;q=0.8,video/*;q=0.8,*/*;q=0.5',
-								'Accept-Encoding': 'gzip, deflate, br',
-								'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) '
-											'Version/13.1.2 Safari/605.1.15',
-								'Accept-Language': 'en-ca', 'Referer': referer,
-								'Connection': 'keep-alive'
-							}
-						r = requests.get(url , headers=header)
-						print('----------> Page ',  i , '- ', r)
-						if r.status_code == 200:
-							pages[i] = r
-							print('----------------------->', r, ' for ' , url , ' page ' , i)
-						else:
-							url = baseUrl+f'{i}.png'
-							r = requests.get(url , headers=header)
-							if r.status_code == 200:
-								pages[i] = r
-								print('----------------------->', r, ' for ' , url , ' page ' , i)
-							else:
-								print('Failed!')
-
+				req = 200
+				while req == 200:
+					r = requests.get(baseUrl+str(page)+'.jpg' , headers=header);req = r.status_code
+					print(req , 'for page ' , page , 'jpg')
+					if req != 200:
+						r = requests.get(baseUrl+str(page)+'.png');req = r.status_code
+						print(req , 'for page ' , page , 'png')
+					pages[page] = r
+					page += 1
+				print('completed')
 				Downloader.toPdf(name , pages , None , website , fullName , databaseID)
 
 
@@ -210,7 +153,6 @@ class Downloader:
 
 
 	def getBin(pages , referer):
-		d={}
 		pagesData = {}
 		def get(url):
 			header = {
@@ -225,18 +167,8 @@ class Downloader:
 				pagesData[url] = r
 			print(r , 'for' , url)
 
-		def run():
-			index = 1
-			for i in list(pages.values()):
-				time.sleep(0.1)
-				print(f'Starting thread {index}')
-				d['x'+str(index)] = threading.Thread(target=get , args=(i,)) 
-				d['x'+str(index)].start()
-				index += 1
-		run()
-		for i in range(1 , len(pages)+1):
-			d['x'+str(i)].join()
-			print(f'Ending Thread {i}')
+		for i in pages:
+			get(pages[i])
 
 		return pagesData
 

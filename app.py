@@ -12,7 +12,7 @@ import json
 
 #SETTINGS
 app.config.update(
-	SECRET_KEY=os.environ['SECRET_KEY'],
+	SECRET_KEY='HIDETHISSHIT',
 	SESSION_COOKIE_SECURE=True,
 	REMEMBER_COOKIE_SECURE=True,
 	SESSION_COOKIE_HTTPONLY=True,
@@ -123,7 +123,7 @@ def manga(url):
 				thr = Thread(target=mangaDownloaderUser.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
 				thr.start()
 			else:
-				thr = Thread(target=mangaDownloaderServer.Downloader.getPages , args=[chapterName , website , chapterUrl ,  sauce , name , session['databaseID']])
+				thr = Thread(target=mangaDownloaderServer.Downloader.getPages , args=[name , website , url ,  sauce , name , session['databaseID']])
 				thr.start()
 			#mangaDownloaderUser.Downloader.getPages(name, website, url, sauce )
 
