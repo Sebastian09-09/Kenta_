@@ -1,0 +1,4 @@
+{
+    "method": "threads" ,
+    "NOTE" : "use 'loop' in 'method' if you want to download images one by one , use 'threads' if you want to download it all at once "
+}
