@@ -1,4 +1,0 @@
-{
-    "user": "server" ,
-    "NOTE" : "use 'localhost' in 'user' if locally hosted , use 'server' if hosting in 'heroku' "
-}
