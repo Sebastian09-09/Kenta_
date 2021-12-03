@@ -90,9 +90,11 @@
 								<div class="form-group mb-4">
 									<input type="text" name="url" class="form-control" placeholder="{{placeholder}}"  autocomplete="off"/>
 								</div>
+                <!--
 								<div class="form-group mb-4">
-									<input type="number" name="sauce" class="form-control" placeholder="sauce ( only for nhentai )"  autocomplete="off"/>
+									<input type="number" name="sauce" class="form-control" placeholder="sauce"  autocomplete="off"/>
 								</div>
+                -->
 							{% else %}
 							<!--
 							<div class="logs">
@@ -105,13 +107,11 @@
 									<div class="media-body tm-service-text">
 										<p>Website : {{website}} </p>
 										<p>Title : {{name}} </p>
-										{% if website != 'nhentai' %}
-											<p>Latest Chapter : {{firstChap}}</p>
-										{% endif %}
+										<p>Latest Chapter : {{firstChap}}</p>
 									</div> 
 								</div>
 								<!--<p>URL : {{placeholder}} </p>-->
-								{% if website != 'nhentai' %}
+								
 									<p>
 									Description : {{description[:100]}}<span id="dots">...</span><span id="more">{{description[100:]}}</span>
 									</p>
@@ -138,7 +138,7 @@
 											{% endfor %}
 										</select>
 									</p>
-								{% endif %}
+								
 								<p>Everything looks good ? <input required="" id="checkbox_" type="checkbox" name="url" onchange="toggleLink(this);" value="{{placeholder}}"> </p>
 								
 							{% endif %}
