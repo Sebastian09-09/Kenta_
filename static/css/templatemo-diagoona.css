@@ -8,6 +8,12 @@ body {
     overflow-x: hidden;
     color: white;
     background-color: #2C353C;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 a { 
@@ -18,16 +24,19 @@ ul { padding: 0; }
 a:hover { text-decoration: none; }
 button:focus { outline: none; }
 p { line-height: 1.9; }
-.tm-logo { margin-right: 20px; }
+.tm-logo { margin-right: 20px;
+text-shadow: 0px 0px 10px black; }
 .tm-slogon {
+    text-shadow: 0px 0px 10px black;
     font-weight: 500;
     font-style: italic;
     font-size: 30px;
 }
 .tm-sitename {font-weight: bold;
+text-shadow: 0px 0px 10px black;
 font-size: 40px; }
 .tm-site-header{
-    color: black;
+    color: white;
 }
 
 /* Navigation */
@@ -205,7 +214,8 @@ hr { border-top: 1px solid white; }
 .tm-foot{
     color: white;
 }
-.tm-foot:hover{
+.tm-foot:h
+    resize: none;over{
     color: #848484;
 }
 /* Service */ 
@@ -345,11 +355,13 @@ textarea {
 }
 
 @media (max-width: 460px) {
-    .tm-logo { margin-right: 15px; }
+    .tm-logo { margin-right: 20px;
+    font-size: 7em }
     .tm-sitename { font-size: 1.8rem; }
-    .tm-slogan { font-size: 0.8rem; }
+    .5pxm-slogan { font-size: 0.8rem; }
+    
 }
-
+5px
 @media (max-width: 450px), (min-width: 768px) and (max-width: 830px), (min-width: 992px) and (max-width: 1040px) {
     .tm-service-media { flex-direction: column; }
     .tm-service-media-img-l { flex-direction: column-reverse; }
@@ -426,4 +438,45 @@ a{
 }
 .special:hover{
     background-color: crimson;
+}
+
+.scroll {
+    border-radius: 5px;
+    padding:10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    height: 350px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align:justify;
+    padding-bottom: 0px;
+}
+
+.file{
+    padding: 5px
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+}
+
+hr{
+  border-top: 3px solid rgba(245, 245, 245, 0.9);
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0); 
+  border-radius: 100px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: white; 
+  border-radius: 100px;
 }
