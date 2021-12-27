@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session , send_from_directory
 import dataFetcher
 import mangaDownloaderLoops
 import mangaDownloaderThreads
@@ -13,11 +13,22 @@ import string
 import json
 
 #SETTINGS
-app.config.update(SECRET_KEY=os.environ['SECRET_KEY'],
+app.config.update(SECRET_KEY='sus',
                   SESSION_COOKIE_SECURE=True,
                   REMEMBER_COOKIE_SECURE=True,
                   SESSION_COOKIE_HTTPONLY=True,
                   REMEMBER_COOKIE_HTTPONLY=True)
+
+#ARC SERVER
+@app.route("/arc-sw.js")
+def arc():
+	return send_from_directory(directory='',path='arc-sw.js',mimetype='application/javascript')
+
+#REMOVE NUMBER OF TRIES
+def removeFailCount():
+    if 'failCount' in session:
+        del session['failCount']
+    
 
 
 #REMOVE TEMP FILES
@@ -32,8 +43,8 @@ def removeTempFiles():
             shutil.rmtree(f'static/downloads/{i}')
 
 
-#USER
-def getUser():
+#METHOD
+def getMethod():
     with open('method.json', 'r') as f:
         data = json.load(f)
     return data['method']
@@ -61,13 +72,8 @@ def addSession():
 #HOME
 @app.route("/")
 def home():
+    removeFailCount()
     return render_template('index.html')
-
-
-#SERVICE
-@app.route("/services/")
-def services():
-    return render_template('services.html')
 
 
 #MANGA
@@ -114,14 +120,25 @@ def manga(url):
         info = dataFetcher.Fetcher.getInfo(website, url, sauce)
         name = info[0]
         if name == '<!Failed!>':
-            flash(f'Failed to Fetch data', 'error')
-            return redirect(url_for('manga'))
+            if 'failCount' not in session:
+                temp=os.system('pip install -r requirements.txt');session['failCount'] = 1
+                info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+                name = info[0]
+                if name == '<!Failed!>':
+                    flash(f'Failed to Fetch data', 'error')
+                    return redirect(url_for('manga'))
+            else:
+                flash(f'Failed to Fetch data', 'error')
+                return redirect(url_for('manga'))
 
         #if website != 'nhentai':
         desc = info[1]
         chapters = info[2]
         cover = info[3]
-        firstChap = list(chapters.keys())[-1]
+        try:
+          firstChap = list(chapters.keys())[-1]
+        except:
+          firstChap = 'None'
         #else:
             #cover = info[1]
 
@@ -129,7 +146,27 @@ def manga(url):
             chapter = request.form['chapter'].split('@@@')
             chapterName = chapter[0]
             chapterUrl = chapter[1].replace('"', ' ').strip()
-            if getUser() == 'loops':
+            if website == 'kissmanga':
+                fileName = str(website) + '-' + str(chapterName)
+            else:
+                fileName = str(website) + '-' + str(name) + '-' + str(chapterName)
+            fileName=mangaDownloaderThreads.Downloader.clearName(fileName)
+            fileName2=fileName+'[downloading...].pdf'
+            fileName=fileName+'.pdf'
+
+            if fileName in os.listdir(f'static/downloads/{session["databaseID"]}') or fileName2 in os.listdir(f'static/downloads/{session["databaseID"]}'):
+              flash(f'Already Downloaded' , 'error')
+              return render_template('manga.html',
+                                   placeholder=absurl,
+                                   desc='Start',
+                                   website=website,
+                                   name=name,
+                                   description=desc,
+                                   chapters=chapters,
+                                   cover=cover,
+                                   firstChap=firstChap)
+            flash(f'Download started' , 'success')
+            if getMethod() == 'loops':
                 thr = Thread(target=mangaDownloaderLoops.Downloader.getPages,
                              args=[
                                  chapterName, website, chapterUrl, sauce, name,
@@ -147,7 +184,7 @@ def manga(url):
             #mangaDownloaderLoops.Downloader.getPages(chapterName, website, chapterUrl, sauce )
         '''
         if website == 'nhentai' and 'sauce' not in request.form:
-            if getUser() == 'loops':
+            if getMethod() == 'loops':
                 thr = Thread(target=mangaDownloaderLoops.Downloader.getPages,
                              args=[
                                  name, website, url, sauce, name,
@@ -186,25 +223,29 @@ def manga(url):
 #SUPPORTED WEBSITES
 @app.route("/supportedwebsites/")
 def supportedwebsites():
+    removeFailCount()
     return render_template('supported websites.html')
 
 
 #CONTACT
 @app.route("/contact/")
 def contact():
+    removeFailCount()
     return render_template('contact.html')
 
 
 #DOWNLOADS
 @app.route("/downloads/")
 def downloads():
+    removeFailCount()
     addSession()
-    return 'your downloads will be here'
+    return render_template('downloads.html')
 
 
 #DATABASE DETAILS
 @app.route("/database/")
 def database():
+    removeFailCount()
     text = ''
     dbs = os.listdir('static/downloads')
     for db in dbs:
@@ -215,8 +256,17 @@ def database():
                 text += '---------->' + j + '<br>'
     return text
 
+#SESSION DATA
+@app.route("/session/")
+def sessionCheck():
+    temp = ''
+    for i in session:
+      temp += f'{session[i]} <br>'
+    return temp
+    
+
 
 if __name__ == '__main__':
     removeTempFiles()
-    temp=os.system('pip install -r requirements.txt')
+    #temp=os.system('pip install -r requirements.txt')
     app.run(host='0.0.0.0', port=8080)

@@ -13,6 +13,7 @@ import os
 class Downloader:
     @staticmethod
     def getPages(name, website, url, sauce, fullName, databaseID):
+        Downloader.createManga(name , website , fullName , databaseID , True)
         #print(url)
         pages = {}
 
@@ -36,6 +37,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -51,6 +53,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'manganato':
 
@@ -67,6 +70,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'nhentai':
                 d = {}
@@ -164,6 +168,7 @@ class Downloader:
 
                 Downloader.toPdf(name, pages, None, website, fullName,
                                  databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'readm.org':
                 pages_ = soup.find(class_='ch-images ch-image-container')
@@ -175,6 +180,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
+            Downloader.createManga(name , website , fullName , databaseID , False)
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
         if imagesData != None:
@@ -265,6 +271,31 @@ class Downloader:
 
         return pagesData
 
+    def createManga(name, website, fullName, dbid , create):
+        if create:
+            if website == 'kissmanga':
+                savedAs = str(website) + '-' + str(name)
+            else:
+                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
+            savedAs = Downloader.clearName(savedAs)
+            with open(f'static/downloads/{dbid}/{savedAs}[downloading...].pdf', 'w') as fp:pass
+        else:
+            if website == 'kissmanga':
+                savedAs = str(website) + '-' + str(name)
+            else:
+                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
+            savedAs = Downloader.clearName(savedAs)
+            try:
+                os.remove(f'static/downloads/{dbid}/{savedAs}[downloading...].pdf')
+            except:
+                pass
+
+            
+            
+        #print(savedAs)
+        #return
+
+    @staticmethod
     def clearName(name):
         newName = ''
         whitespace = 0
