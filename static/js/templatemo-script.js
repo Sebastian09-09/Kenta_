@@ -12,7 +12,7 @@ const initBg = (autoplay = true) => {
     }
     const bgImgs = bgImgsNames.map(img => "../static/img/" + img);
 
-    $.backstretch(bgImgs, {duration: 4000, fade: 1000});
+    $.backstretch(bgImgs, {duration: 5000, fade: 1500});
 
     if(!autoplay) {
       $.backstretch('pause');  
@@ -69,13 +69,13 @@ var websites = {
     0: ['kissmanga.org.png' , '290' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga' , 'https://kissmanga.org/'],
     1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot' , 'https://mangakakalot.com/'],
     2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato' , 'https://manganato.com/'],
-    3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai' , 'https://nhentai.com/'],
-    4: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
+    //3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai' , 'https://nhentai.com/'],
+    3: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
 };
 function increment(){
-    if (currentWebpage < 4){
+    if (currentWebpage < 3){
         currentWebpage = currentWebpage + 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/5'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/4'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
@@ -86,7 +86,7 @@ function increment(){
 function decrement(){
     if (currentWebpage >= 1){
         currentWebpage = currentWebpage - 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/5'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/4'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
         document.getElementById('logo').width = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
