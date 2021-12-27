@@ -214,8 +214,8 @@ hr { border-top: 1px solid white; }
 .tm-foot{
     color: white;
 }
-.tm-foot:h
-    resize: none;over{
+.tm-foot:hover{
+    resize: none;
     color: #848484;
 }
 /* Service */ 
@@ -358,16 +358,16 @@ textarea {
     .tm-logo { margin-right: 20px;
     font-size: 7em }
     .tm-sitename { font-size: 1.8rem; }
-    .5pxm-slogan { font-size: 0.8rem; }
+    .tm-slogan { font-size: 0.8rem; }
     
 }
-5px
+
 @media (max-width: 450px), (min-width: 768px) and (max-width: 830px), (min-width: 992px) and (max-width: 1040px) {
     .tm-service-media { flex-direction: column; }
     .tm-service-media-img-l { flex-direction: column-reverse; }
     .tm-service-text { margin-top: 20px; }
-    .tm-service-img { margin-right: 0; }
-    .tm-service-img-r { margin-left: 0; }
+    .tm-service-img { margin-right: 1rem; }
+    .tm-service-img-r { margin-left: 1rem; }
     .tm-slogon {
         font-weight: 500;
         font-style: italic;
@@ -443,7 +443,7 @@ a{
 .scroll {
     border-radius: 5px;
     padding:10px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.55);
     height: 350px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -452,10 +452,10 @@ a{
 }
 
 .file{
-    padding: 5px
+    padding: 5px;
     margin-bottom: 5px;
     margin-top: 5px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(79, 79, 79, 0.55);
     border-radius: 5px;
 }
 
