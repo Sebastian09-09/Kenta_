@@ -124,23 +124,66 @@
 									<b><u>Description :</u></b> {{description[:100]}}<span id="dots">...</span><span id="more">{{description[100:]}}</span>
 									</p>
 									<p onclick="readMore()" id="myBtn">Read more</p>
+									
 
 									<p>
-										<label for="chapter">Choose a chapter to download:</label>
-										<select name="chapter" id="chapter">
-											{% for i in chapters %}
-												{% if website == 'kissmanga' %}
-													  <option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split('-')[-1]}}</option>
-												{% elif website == 'readm.org' %}
-													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
-												{% elif website == 'manganato' %}
-													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
-												{% elif website == 'mangakakalot' %}
-													<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
-												{% endif %}
-											{% endfor %}
-										</select>
+										<p> <b><u>Download all the chapters</u> :</b> <input id="chapters" type="checkbox" name="downloadAllChapters" onchange="toggleDownload(this);" value="True"> </p>
+										<div id="hide">
+											
+
+											<p>
+												<label for="multipleChaptersStart"><b><u>Start Downloading from</u> :</b> </label>
+												<select name="multipleChaptersStart" id="multipleChaptersStart">
+													{% for i in chapters %}
+														{% if website == 'kissmanga' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
+														{% elif website == 'readm.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'manganato' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% elif website == 'mangakakalot' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% endif %}
+													{% endfor %}
+												</select>
+												
+												<label for="multipleChaptersEnd"><b><u>End Downloading at</u> :</b> </label>
+												<select name="multipleChaptersEnd" id="multipleChaptersEnd">
+												
+													{% for i in chapters%}
+														{% if website == 'kissmanga' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
+														{% elif website == 'readm.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'manganato' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% elif website == 'mangakakalot' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% endif %}
+													{% endfor %}
+												</select>
+											</p>
+
+											
+											
+											<label for="chapter"><b><u>Choose a chapter to download</u> :</b></label>
+											<select name="chapter" id="chapter">
+												{% for i in chapters %}
+													{% if website == 'kissmanga' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
+													{% elif website == 'readm.org' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+													{% elif website == 'manganato' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+													{% elif website == 'mangakakalot' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+													{% endif %}
+												{% endfor %}
+											</select>
+										</div>
 									</p>
+									
+									<p style="font-size: 13px; color: crimson; font-weight: bold;">Note: Downloading "all the chapters" would be given more priority than others and downloaing a "range of chapters" will be given more priority than downloading a "single chapter"</p>
 								
 								<p>Everything looks good ? <input required="" id="checkbox_" type="checkbox" name="url" onchange="toggleLink(this);" value="{{placeholder}}"> </p>
 								
