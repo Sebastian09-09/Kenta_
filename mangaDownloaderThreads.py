@@ -13,6 +13,7 @@ import os
 class Downloader:
     @staticmethod
     def getPages(name, website, url, sauce, fullName, databaseID):
+        #Downloader.createManga(name , website , fullName , databaseID , True)
         print('started'+url)
         pages = {}
 
@@ -36,7 +37,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , True)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -52,7 +53,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , True)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'manganato':
 
@@ -69,8 +70,8 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , True)
-            """
+                Downloader.createManga(name , website , fullName , databaseID , False)
+
             if website == 'nhentai':
                 d = {}
                 keepRunning = [True]
@@ -167,8 +168,7 @@ class Downloader:
 
                 Downloader.toPdf(name, pages, None, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , True)
-                """
+                #Downloader.createManga(name , website , fullName , databaseID , False)
 
             if website == 'readm.org':
                 pages_ = soup.find(class_='ch-images ch-image-container')
@@ -180,7 +180,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-            Downloader.createManga(name , website , fullName , databaseID , True)
+                Downloader.createManga(name , website , fullName , databaseID , False)
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
         if imagesData != None:
