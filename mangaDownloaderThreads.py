@@ -13,8 +13,7 @@ import os
 class Downloader:
     @staticmethod
     def getPages(name, website, url, sauce, fullName, databaseID):
-        Downloader.createManga(name , website , fullName , databaseID , True)
-        #print(url)
+        print('started'+url)
         pages = {}
 
         referer = 'https://kissmanga.org' if website == 'kissmanga' else 'https://mangakakalot.com' if website == 'mangakakalot' else 'https://manganato.com' if website == 'manganato' else 'https://cdn.nhentai.com' if website == 'nhentai' else 'https://readm.org' if website == 'readm.org' else None
@@ -37,7 +36,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID , True)
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -53,7 +52,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID , True)
 
             if website == 'manganato':
 
@@ -70,8 +69,8 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
-
+                Downloader.createManga(name , website , fullName , databaseID , True)
+            """
             if website == 'nhentai':
                 d = {}
                 keepRunning = [True]
@@ -168,7 +167,8 @@ class Downloader:
 
                 Downloader.toPdf(name, pages, None, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID , True)
+                """
 
             if website == 'readm.org':
                 pages_ = soup.find(class_='ch-images ch-image-container')
@@ -180,7 +180,7 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-            Downloader.createManga(name , website , fullName , databaseID , False)
+            Downloader.createManga(name , website , fullName , databaseID , True)
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
         if imagesData != None:
@@ -272,6 +272,17 @@ class Downloader:
         return pagesData
 
     def createManga(name, website, fullName, dbid , create):
+        with open(f'static/downloads/{dbid}/downloads.txt' , 'a'  , encoding='utf-8') as f:
+            if website == 'kissmanga':
+                savedAs = str(website) + '-' + str(name)
+            else:
+                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
+            savedAs = Downloader.clearName(savedAs)
+            savedAs = Downloader.hardClearName(savedAs)
+            print(f'---------------------> {savedAs}')
+            f.write(savedAs+'\n')
+
+        """ #old download manager 
         if create:
             if website == 'kissmanga':
                 savedAs = str(website) + '-' + str(name)
@@ -289,6 +300,7 @@ class Downloader:
                 os.remove(f'static/downloads/{dbid}/{savedAs}[downloading...].pdf')
             except:
                 pass
+        """
 
             
             
@@ -305,6 +317,21 @@ class Downloader:
                 newName += i
             if i != ' ':
                 whitespace = 0
+                newName += i
+        if "\r" in newName:
+            newName = newName.replace("\r", " ")
+        if "\n" in newName:
+            newName = newName.replace("\n", " ")
+        for i in [":", "\\", "/", "|", "*", "<", ">", "?", '"']:
+            if i in newName:
+                newName = newName.replace(i, "_")
+        return (newName)
+
+    @staticmethod
+    def hardClearName(name):
+        newName = ''
+        for i in name:
+            if i != ' ':
                 newName += i
         if "\r" in newName:
             newName = newName.replace("\r", " ")

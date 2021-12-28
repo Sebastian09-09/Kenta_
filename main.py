@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import dataFetcher
 import mangaDownloaderLoops
 import mangaDownloaderThreads
+import time
+import json
 
 app = Flask(__name__)
 import os
@@ -61,12 +63,16 @@ def addSession():
             db = str(random.randint(0, 1000000001)) + str(''.join(
                 random.choices(string.ascii_uppercase + string.digits, k=5)))
         os.mkdir(f'static/downloads/{db}')
+        with open(f'static/downloads/{db}/downloads.txt' , 'w' , encoding='utf-8'):
+            pass
         session['databaseID'] = db
     else:
         dbid = session['databaseID']
         dbs = os.listdir('static/downloads')
         if str(dbid) not in dbs:
             os.mkdir(f'static/downloads/{dbid}')
+            with open(f'static/downloads/{dbid}/downloads.txt' , 'w' , encoding='utf-8'):
+                pass
 
 
 #HOME
@@ -76,6 +82,26 @@ def home():
     return render_template('index.html')
 
 
+
+#DOWNLOAD Multiple Chapters
+def downloadChap(chapters , website , sauce , name , dbid ):
+    for chapter in chapters:
+        chapterName = chapter
+        chapterUrl = chapters[chapter]
+        if website == 'kissmanga':
+            fileName = str(website) + '-' + str(chapterName)
+        else:
+            fileName = str(website) + '-' + str(name) + '-' + str(chapterName)
+        fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
+        fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
+        print(f'---------------------> {fileName}')
+        with open(f'static/downloads/{dbid}/downloads.txt' , 'r'  , encoding='utf-8' ) as f:
+            if fileName not in f.read():
+                mangaDownloaderThreads.Downloader.getPages(chapterName, website, chapterUrl, sauce, name, dbid)
+            else:
+                time.sleep(0.1)
+                
+
 #MANGA
 @app.route("/manga/", defaults={'url': ' '}, methods=["GET", "POST"])
 @app.route("/manga/<url>/", methods=["GET", "POST"])
@@ -84,6 +110,7 @@ def manga(url):
     if request.method == "GET":
         return render_template('manga.html', placeholder="url", desc='Fetch')
     else:
+        #print(request.form)
         sauce = None #nhentai is no more supported 
         url = request.form['url']
         if r"!@$%%$@!" in url:
@@ -101,21 +128,7 @@ def manga(url):
         if website == None:
             flash(f'This Website is not supported!', 'error')
             return redirect(url_for('manga'))
-        '''
-        if 'sauce' in request.form:
-            sauce = request.form['sauce']
-            if website == 'nhentai' and sauce == '':
-                flash(f'Please input the sauce too!', 'warning')
-                return redirect(url_for('manga'))
-            info = dataFetcher.Fetcher.getInfo(website, url, sauce)
-            absurl = str(url) + r"!@$%%$@!" + str(sauce)
-        else:
-            if website == 'nhentai' and sauce == '':
-                flash(f'Please input the sauce too!', 'warning')
-                return redirect(url_for('manga'))
-            info = dataFetcher.Fetcher.getInfo(website, url, sauce)
-            absurl = str(url) + r"!@$%%$@!" + str(sauce)
-        '''
+
         absurl = str(url) + r"!@$%%$@!" + str(sauce)
         info = dataFetcher.Fetcher.getInfo(website, url, sauce)
         name = info[0]
@@ -142,21 +155,13 @@ def manga(url):
         #else:
             #cover = info[1]
 
-        if 'chapter' in request.form:
-            chapter = request.form['chapter'].split('@@@')
-            chapterName = chapter[0]
-            chapterUrl = chapter[1].replace('"', ' ').strip()
-            if website == 'kissmanga':
-                fileName = str(website) + '-' + str(chapterName)
-            else:
-                fileName = str(website) + '-' + str(name) + '-' + str(chapterName)
-            fileName=mangaDownloaderThreads.Downloader.clearName(fileName)
-            fileName2=fileName+'[downloading...].pdf'
-            fileName=fileName+'.pdf'
-
-            if fileName in os.listdir(f'static/downloads/{session["databaseID"]}') or fileName2 in os.listdir(f'static/downloads/{session["databaseID"]}'):
-              flash(f'Already Downloaded' , 'error')
-              return render_template('manga.html',
+        """ DOWNLOAD ALL CHAPTERS """
+        if 'downloadAllChapters' in request.form:
+            flash(f'Downloading all the chapters' , 'success')
+            thr = Thread(target=downloadChap, args=[chapters , website , sauce , name , session['databaseID'] ])
+            thr.start()
+            
+            return render_template('manga.html',
                                    placeholder=absurl,
                                    desc='Start',
                                    website=website,
@@ -165,6 +170,84 @@ def manga(url):
                                    chapters=chapters,
                                    cover=cover,
                                    firstChap=firstChap)
+
+        """ DOWNLOAD A RANGE OF CHAPTERS """
+        if 'multipleChaptersStart' in request.form and request.form['multipleChaptersStart'] != request.form['multipleChaptersEnd']:
+            newChapters = {}
+            add = False
+
+            chapkeys = list(chapters.keys())
+            chapkeys = list(map(mangaDownloaderThreads.Downloader.clearName , chapkeys))
+            chapkeys = list(map(mangaDownloaderThreads.Downloader.hardClearName , chapkeys))
+            
+            start_ = mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersStart'].split('@@@')[0])
+            start_ = mangaDownloaderThreads.Downloader.hardClearName(start_)
+            end_ = mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersEnd'].split('@@@')[0])
+            end_ = mangaDownloaderThreads.Downloader.hardClearName(end_)
+            startIndex = chapkeys.index(start_)
+            endIndex = chapkeys.index(end_)
+            if startIndex < endIndex:  
+                for i in chapters:
+                    if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersStart'].split('@@@')[0])):
+                        add = True
+                    if add:
+                        newChapters[i] = chapters[i]
+                    if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersEnd'].split('@@@')[0])):
+                        add = False
+
+            else:
+                for i in chapters:
+                    if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersEnd'].split('@@@')[0])):
+                        add = True
+                    if add:
+                        newChapters[i] = chapters[i]
+                    if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersStart'].split('@@@')[0])):
+                        add = False
+
+            flash(f'Download started' , 'success')
+            thr = Thread(target=downloadChap, args=[newChapters , website , sauce , name , session['databaseID'] ])
+            thr.start()
+                
+            
+            return render_template('manga.html',
+                                   placeholder=absurl,
+                                   desc='Start',
+                                   website=website,
+                                   name=name,
+                                   description=desc,
+                                   chapters=chapters,
+                                   cover=cover,
+                                   firstChap=firstChap)
+            
+
+        """ DOWNLOAD SINGLE CHAPTER """
+        if 'chapter' in request.form:
+            chapter = request.form['chapter'].split('@@@')
+            chapterName = chapter[0]
+            chapterUrl = chapter[1].replace('"', ' ').strip()
+            if website == 'kissmanga':
+                fileName = str(website) + '-' + str(chapterName)
+            else:
+                fileName = str(website) + '-' + str(name) + '-' + str(chapterName)
+            fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
+            fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
+            print(f'---------------------> {fileName}')
+            #fileName2=fileName+'[downloading...].pdf'
+            #fileName=fileName+'.pdf'
+            
+            with open(f'static/downloads/{session["databaseID"]}/downloads.txt' , 'r'  , encoding='utf-8' ) as f:
+                if fileName in f.read():
+                    flash(f'Already Downloaded' , 'error')
+                    return render_template('manga.html',
+                                   placeholder=absurl,
+                                   desc='Start',
+                                   website=website,
+                                   name=name,
+                                   description=desc,
+                                   chapters=chapters,
+                                   cover=cover,
+                                   firstChap=firstChap)
+                                   
             flash(f'Download started' , 'success')
             if getMethod() == 'loops':
                 thr = Thread(target=mangaDownloaderLoops.Downloader.getPages,
@@ -181,26 +264,6 @@ def manga(url):
                              ])
                 thr.start()
 
-            #mangaDownloaderLoops.Downloader.getPages(chapterName, website, chapterUrl, sauce )
-        '''
-        if website == 'nhentai' and 'sauce' not in request.form:
-            if getMethod() == 'loops':
-                thr = Thread(target=mangaDownloaderLoops.Downloader.getPages,
-                             args=[
-                                 name, website, url, sauce, name,
-                                 session['databaseID']
-                             ])
-                thr.start()
-            else:
-                thr = Thread(target=mangaDownloaderThreads.Downloader.getPages,
-                             args=[
-                                 name, website, url, sauce, name,
-                                 session['databaseID']
-                             ])
-                thr.start()
-            #mangaDownloaderLoops.Downloader.getPages(name, website, url, sauce )
-          '''
-
         #if website != 'nhentai':
         return render_template('manga.html',
                                    placeholder=absurl,
@@ -211,13 +274,6 @@ def manga(url):
                                    chapters=chapters,
                                    cover=cover,
                                    firstChap=firstChap)
-        '''else:
-            return render_template('manga.html',
-                                   placeholder=absurl,
-                                   desc='Start',
-                                   website=website,
-                                   name=name,
-                                   cover=cover)'''
 
 
 #SUPPORTED WEBSITES
@@ -269,4 +325,4 @@ def sessionCheck():
 if __name__ == '__main__':
     removeTempFiles()
     #temp=os.system('pip install -r requirements.txt')
-    app.run(host='0.0.0.0', port=8080)
+    app.run()
