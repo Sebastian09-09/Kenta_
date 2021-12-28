@@ -166,4 +166,19 @@ function toggleLink(checkBox)
     fixit()
 }
 
+
+function toggleDownload(checkBox)
+{
+    var hide = document.getElementById("hide");
+    
+    if (checkBox.checked){
+        hide.style.display = "none";
+    }else{
+        hide.style.display = "inline";
+    }
+    fixit()
+}
+
+
+
 window.onresize = fixit;

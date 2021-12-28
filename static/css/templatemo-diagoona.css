@@ -419,7 +419,7 @@ textarea {
     padding: 10px;
     margin-bottom: 5px;
 }
-#option , #chapter{
+#option , #chapter , #multipleChaptersEnd , #multipleChaptersStart {
     background-color: #2C353C;
     width: 100%;
 }
@@ -443,7 +443,7 @@ a{
 .scroll {
     border-radius: 5px;
     padding:10px;
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: rgba(0, 0, 0, 0.5);
     height: 350px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -455,7 +455,7 @@ a{
     padding: 5px;
     margin-bottom: 5px;
     margin-top: 5px;
-    background-color: rgba(79, 79, 79, 0.55);
+    background-color: rgba(79, 79, 79, 0.5);
     border-radius: 5px;
 }
 
