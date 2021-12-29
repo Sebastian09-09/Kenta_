@@ -8,7 +8,7 @@ import urllib.parse
 from PIL import Image
 from io import BytesIO
 import os
-
+import json
 
 class Downloader:
     @staticmethod
@@ -38,6 +38,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -54,6 +55,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
 
             if website == 'manganato':
 
@@ -71,6 +73,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
 
             if website == 'nhentai':
                 d = {}
@@ -181,6 +184,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
         if imagesData != None:
@@ -271,6 +275,18 @@ class Downloader:
 
         return pagesData
 
+    def removeLoading(name , website , fullName , dbid):
+        loading = Downloader.getLoading(dbid)
+        if website == 'kissmanga':
+                savedAs = str(website) + '-' + str(name)
+        else:
+                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
+        savedAs = Downloader.clearName(savedAs)
+        savedAs = Downloader.hardClearName(savedAs)
+        del loading[savedAs]
+        Downloader.setLoading(dbid , loading)
+            
+
     def createManga(name, website, fullName, dbid , create):
         with open(f'static/downloads/{dbid}/downloads.txt' , 'a'  , encoding='utf-8') as f:
             if website == 'kissmanga':
@@ -341,6 +357,18 @@ class Downloader:
             if i in newName:
                 newName = newName.replace(i, "_")
         return (newName)
+
+
+    @staticmethod
+    def getLoading(dbid):
+        with open(f'static/downloads/{dbid}/loading.json' , 'r'  , encoding='utf-8') as f:
+            return json.load(f)
+
+    @staticmethod
+    def setLoading(dbid , data):
+        with open(f'static/downloads/{dbid}/loading.json' , 'w'  , encoding='utf-8') as f:
+            json.dump(data , f)
+
 
 
 #x=Downloader.getPages( 'yeah' , 'mangakakalot' ,  'https://mangakakalot.com/chapter/hj918822/chapter_1' , '')
