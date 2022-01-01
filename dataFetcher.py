@@ -9,7 +9,7 @@ class Fetcher:
     @staticmethod
     def getInfo(website, url, sauce):
         try:
-            if website == 'readm.org':
+            if website == 'readm.org' or website == 'mangaread.org':
                 ext = '/'
             elif website == 'kissmanga':
                 ext = '.org/'
@@ -52,6 +52,7 @@ class Fetcher:
 
                     return (name.text.strip(), desc.text.strip(), chapters,
                             'https://kissmanga.org' + cover.img.attrs['src'])
+                
                 if website == 'readm.org':
                     name = soup.find(class_='page-title')
                     desc = soup.find(class_='series-summary-wrapper')
@@ -66,8 +67,10 @@ class Fetcher:
                     extent = image.split('.')[-1]
                     location = f"static/temp/{name.text.strip()}.{extent}"
                     if name.text.strip() + '.' + extent not in files:
-                        im = Image.open(requests.get(image, stream=True).raw)
-                        im.save(location)
+                        r = requests.get(image, stream=True).raw
+                        im = Image.open(r)
+                        nim = im.convert('RGB')
+                        nim.save(location)
 
                     rawChapters = soup.find_all(class_='item season_start')
                     chapters = {}
@@ -76,8 +79,9 @@ class Fetcher:
                         )] = 'https://readm.org' + str(i.a.attrs['href'])
                     chapters = dict(reversed(list(chapters.items())))
                     return (name.text.strip(), desc, chapters, '/' + location)
+                
                 if website == 'mangakakalot':
-                    name = soup.find('ul', class_='manga-info-text').li.text
+                    name = soup.find('ul', class_='manga-info-text').li.h1.text
                     desc = soup.find(id='noidungm').text.split('summary:')[1]
                     #chapters = soup.find( class_='chapter-list' )
                     #chapter = chapters.div.span.a
@@ -107,37 +111,67 @@ class Fetcher:
                     image = soup.find('span',
                                       class_='info-image').img.attrs['src']
                     return (name.strip(), desc.strip(), chapters, image)
-                '''
-				if website == 'mangaowl':
-					#print(soup)
-					name = soup.find( class_='col-xs-12 col-md-8 single-right-grid-right' )
-					desc = soup.find( class_='single-right-grids description' )
-					chapter = soup.find( 'li' , class_='list-group-item chapter_list' ).a.label.text.strip()
-					image = f'https://image.mostraveller.com/uploads/images/comics/{url.split("https://mangaowl.com/single/")[1].split("/")[0]}/thumbnail.png'
-					return(str(name).split('h2')[1].split('</i>')[1].rstrip('</').strip()  , str(desc).split('</span>')[1].rstrip('</div>').strip() , chapter , image)
-				'''
-                if website == 'nhentai':
-                    name = soup.find('title').text.split(
-                        '- Comic | nHentai')[0].strip()
-                    if 'Ongoing' in name:
-                        name = name.rstrip('(Ongoing)')
-                    if name == '':
-                        raise AssertionError()
-                    #desc=None
-                    #chapter=None
-                    image = f'https://cdn.nhentai.com/nhe/storage/comics/{sauce}.jpg'
-                    r = requests.get(image)
-                    if r.status_code != 200:
-                        image = f'https://cdn.nhentai.com/nhe/storage/comics/{sauce}.png'
-                        r = requests.get(image)
-                        if r.status_code != 200: raise AssertionError()
 
-                    return (name, image)
+                if website == 'mangaread.org':
+                    name = soup.find(class_='post-title').h1.text
+                    desc = soup.find(class_ = 'summary__content').text
+                    rawChapters = soup.find_all(class_='wp-manga-chapter')
+                    chapters = {}
+                    for i in rawChapters:
+                        chapters[i.a.text.strip()] = str(i.a.attrs['href'])
+                    chapters = dict(reversed(list(chapters.items())))
+                    image = soup.find(class_='summary_image').img.attrs['data-src']
+                    return (name.strip() , desc.strip() , chapters , image )
+
+                if website == 'webtoon':
+                    name = soup.find('h1' , class_='subj').text
+                    desc = soup.find('p' , class_='summary').text
+                    image = str(soup.find(class_='detail_body')["style"])
+                    image = image.split('(')[1].split(')')[0]
+                    extent = image.split('.')[-1]
+                    if '?' in extent:
+                        extent = extent.split('?')[0]
+                    location = f"static/temp/{name.strip()}.{extent}"
+                    path = r'static/temp'
+                    files = os.listdir(path)
+                    if name.strip() + '.' + extent not in files:
+                        r = requests.get(image , headers={'Referer':url} , stream=True).raw
+                        im = Image.open(r)
+                        nim = im.convert('RGB')
+                        nim.save(location)
+                    chapters = {}
+                    
+                    rawChapters = soup.find(id='_listUl')
+                    for i in rawChapters.find_all('li'):
+                        chapters[i.find('span' , class_='subj').span.text.strip()] = i.a.attrs['href']
+                    
+                    chapters = dict(reversed(list(chapters.items())))
+
+                    paginate = soup.find(class_='paginate')
+                    currentPage = paginate.find('span' , class_='on').text
+                    pages = []
+                    for i in paginate:
+                        if i.text.isnumeric() or i.text == 'Next Page' or i.text == 'Previous Episode':
+                            if i.text == 'Next Page':
+                                pages.append('>')
+                            elif i.text == 'Previous Episode':
+                                pages.append('<')
+                            else:
+                                pages.append(i.text)
+                    
+                    return (name.strip() , desc.strip() , chapters , '/'+location , currentPage ,pages )
+
+
+
             else:
                 return ('<!Failed!>', )
-
+        
         except:
             return ('<!Failed!>', )
+        
+        
+
+
 
 
 #details=Fetcher.getInfo('manganato' , 'https://mangaowl.com/single/71513/brave-star-romantics' , None)

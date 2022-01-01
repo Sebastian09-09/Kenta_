@@ -14,17 +14,19 @@ class Downloader:
     @staticmethod
     def getPages(name, website, url, sauce, fullName, databaseID):
         #Downloader.createManga(name , website , fullName , databaseID , True)
-        print('started'+url)
+        if '"' in url:
+            url = url.split('"')[0].strip()
+        print('started '+url)
         pages = {}
 
-        referer = 'https://kissmanga.org' if website == 'kissmanga' else 'https://mangakakalot.com' if website == 'mangakakalot' else 'https://manganato.com' if website == 'manganato' else 'https://cdn.nhentai.com' if website == 'nhentai' else 'https://readm.org' if website == 'readm.org' else None
-        header = {'User-Agent': 'Mozilla/5.0', 'Referer': f'https://{referer}'}
+        referer = 'https://kissmanga.org' if website == 'kissmanga' else 'https://mangakakalot.com' if website == 'mangakakalot' else 'https://manganato.com' if website == 'manganato' else 'https://cdn.nhentai.com' if website == 'nhentai' else 'https://readm.org' if website == 'readm.org' else 'https://mangaread.org' if website == 'mangaread.org' else None
+        header = {'User-Agent': 'Mozilla/5.0', 'Referer': f'{referer}'}
+        #print(header)
         htmlText = requests.get(url, stream=True, headers=header)
         response = htmlText.status_code
         htmlText = htmlText.text
         if response == 200 and website != None:
             soup = BeautifulSoup(htmlText, 'lxml')
-
             if website == 'kissmanga':
                 pages_ = soup.find(id='centerDivVideo')
                 index = 0
@@ -42,6 +44,7 @@ class Downloader:
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
+                #print(pages_)
                 tempPages = pages_.strip().split('<img ')
                 index = 0
                 for i in tempPages:
@@ -58,7 +61,6 @@ class Downloader:
                 Downloader.removeLoading(name , website , fullName , databaseID)
 
             if website == 'manganato':
-
                 pages_ = str(soup.find(class_='container-chapter-reader'))
                 tempPages = pages_.strip().split('<img ')
                 index = 0
@@ -172,7 +174,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, None, website, fullName,
                                  databaseID)
                 #Downloader.createManga(name , website , fullName , databaseID , False)
-
+            
             if website == 'readm.org':
                 pages_ = soup.find(class_='ch-images ch-image-container')
                 images = pages_.find_all('img')
@@ -185,6 +187,34 @@ class Downloader:
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
                 Downloader.removeLoading(name , website , fullName , databaseID)
+            
+
+            if website == 'mangaread.org':
+                pages_ = soup.find(class_ = 'reading-content')
+                images = pages_.find_all(class_='page-break no-gaps')
+                index = 0 
+                for i in images:
+                    pages[index] = i.img.attrs['data-src'].strip()
+                    index += 1
+                pagesData = Downloader.getBin(pages, referer)
+                Downloader.toPdf(name, pages, pagesData, website, fullName,
+                                 databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
+
+            if website == 'webtoon':
+                pages_ = soup.find(id='_imageList')
+                images = pages_.find_all('img')
+                index = 0
+                for i in images:
+                    pages[index] = i.attrs['data-url'].strip()
+                    index += 1
+                pagesData = Downloader.getBin(pages, url)
+                Downloader.toPdf(name, pages, pagesData, website, fullName,
+                                 databaseID)
+                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.removeLoading(name , website , fullName , databaseID)
+
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
         if imagesData != None:
@@ -215,7 +245,7 @@ class Downloader:
                 im1.save(f'static/downloads/{dbid}/{savedAs}.pdf',
                          save_all=True,
                          append_images=imageList)
-            print(savedAs)
+            #print(savedAs)
 
         else:
             name = Downloader.clearName(name)
@@ -257,13 +287,13 @@ class Downloader:
             r = requests.get(url, headers=header)
             if r.status_code == 200:
                 pagesData[url] = r
-            #print(r, 'for', url)
+            ##print(r, 'for', url)
 
         def run():
             index = 1
             for i in list(pages.values()):
                 #time.sleep(0.1)
-                #print(f'Starting thread {index}')
+                ##print(f'Starting thread {index}')
                 d['x' + str(index)] = threading.Thread(target=get, args=(i, ))
                 d['x' + str(index)].start()
                 index += 1
@@ -271,7 +301,7 @@ class Downloader:
         run()
         for i in range(1, len(pages) + 1):
             d['x' + str(i)].join()
-            #print(f'Ending Thread {i}')
+            ##print(f'Ending Thread {i}')
 
         return pagesData
 
@@ -295,32 +325,12 @@ class Downloader:
                 savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
             savedAs = Downloader.clearName(savedAs)
             savedAs = Downloader.hardClearName(savedAs)
-            print(f'---------------------> {savedAs}')
+            #print(f'---------------------> {savedAs}')
             f.write(savedAs+'\n')
 
-        """ #old download manager 
-        if create:
-            if website == 'kissmanga':
-                savedAs = str(website) + '-' + str(name)
-            else:
-                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
-            savedAs = Downloader.clearName(savedAs)
-            with open(f'static/downloads/{dbid}/{savedAs}[downloading...].pdf', 'w') as fp:pass
-        else:
-            if website == 'kissmanga':
-                savedAs = str(website) + '-' + str(name)
-            else:
-                savedAs = str(website) + '-' + str(fullName) + '-' + str(name)
-            savedAs = Downloader.clearName(savedAs)
-            try:
-                os.remove(f'static/downloads/{dbid}/{savedAs}[downloading...].pdf')
-            except:
-                pass
-        """
-
             
             
-        #print(savedAs)
+        ##print(savedAs)
         #return
 
     @staticmethod
