@@ -66,18 +66,20 @@ $(document).ready(function () {
 
 var currentWebpage = 0;
 var websites = {
-    0: ['kissmanga.org.png' , '290' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga' , 'https://kissmanga.org/'],
-    1: ['mangakakalot.png' , '215' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot' , 'https://mangakakalot.com/'],
-    2: ['manganelo.png' , '215' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato' , 'https://manganato.com/'],
+    0: ['kissmanga.org.png' , '70' , 'Read manga online in high quality for free, fast update, daily update Unique reading type All pages just need to scroll to read next page, and many more.' , 'Kiss Manga' , 'https://kissmanga.org/'],
+    1: ['mangakakalot.png' , '70' , 'Read manga online free at Mangakakalot.com, update fastest, most full, synthesized 24h free with high-quality images and be the first one to publish new chapters.' , 'MangaKakalot' , 'https://mangakakalot.com/'],
+    2: ['manganelo.png' , '70' ,'Read manga online free at MangaNato, update fastest, most full, synthesized 24h free with high-quality images. We hope to bring you happy moments. Join and discuss','MangaNato' , 'https://manganato.com/'],
     //3: ['nhentai.webp' , '200' ,'nHentai is a free and frequently updated hentai manga and doujinshi reader packed with thousands of multilingual comics for reading and downloading.','nhentai' , 'https://nhentai.com/'],
-    3: ['readm.org.png' , '210' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
+    3: ['mangaread.org.png' , '70' , 'Welcome to the world of manga. Latest novelties manga to read online. A daily updated directory of the manga. Read along with us.','Mangaread.org' , 'https://mangaread.org/'],
+    4: ['readm.org.png' , '70' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
+    5: ['webtoon.jpg' , '70' , 'WEBTOON is home to thousands of stories across 23 genres including romance, comedy, action, fantasy, and horror. Read comics, webcomics, manga, and manhwa online or download the WEBTOON app.','Webtoon.com' , 'https://webtoon.com/'],
 };
 function increment(){
-    if (currentWebpage < 3){
+    if (currentWebpage < 5){
         currentWebpage = currentWebpage + 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/4'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
-        document.getElementById('logo').width = self.websites[currentWebpage][1]
+        document.getElementById('logo').height = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
         fixit()
@@ -86,9 +88,9 @@ function increment(){
 function decrement(){
     if (currentWebpage >= 1){
         currentWebpage = currentWebpage - 1
-        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/4'
+        document.getElementById('currentWebsite').innerHTML = String(currentWebpage + 1)+'/6'
         document.getElementById('logo').src = '/static/img/supportedWebsites/'+self.websites[currentWebpage][0]
-        document.getElementById('logo').width = self.websites[currentWebpage][1]
+        document.getElementById('logo').height = self.websites[currentWebpage][1]
         document.getElementById('about').innerHTML = self.websites[currentWebpage][2]
         document.getElementById('title').innerHTML =  '<a class="links" href="' + String(self.websites[currentWebpage][4]) + '" target="_blank">' + String(self.websites[currentWebpage][3]) + '</a>'
         fixit()
