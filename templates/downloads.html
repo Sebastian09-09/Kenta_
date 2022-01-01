@@ -63,19 +63,18 @@
 
                       <div class="scroll">
                         <ul>
-                          <li><div class="file">Test Manga 1</div></li>
-                          <li><div class="file">Test Manga 2</div></li>
-                          <li><div class="file">Test Manga 3</div></li>
-                          <hr>Test Manga 4 Files from here this is just a test 
-                          <li><div class="file">Test Manga 4.1</div></li>
-                          <li><div class="file">Test Manga 4.2</div></li>
-                          <li><div class="file">Test Manga 4.3</div></li>
-                          <li><div class="file">Test Manga 4.4</div></li>
-                          <hr>5 , test manga 5 just a drill 
-                          <li><div class="file">Test Manga 5.0</div></li>
-                          <li><div class="file">Test Manga 5.1</div></li>
-                          <li><div class="file">Test Manga 5.2</div></li>
-                          <li><div class="file">Test Manga 5.3</div></li>
+                          {% for i in downloads_ %}
+                            <li>
+                                <div class="file"> 
+                                    <b>{{''.join(i.split('-')[1:])}}</b> <br>
+                                    <a  style="color: crimson;"  target="_blank" href="{{ url_for('download', filename=i) }}"> <i class="fas fa-chevron-right"></i><b> Read Online</b></a> <br>
+                                    <a  style="color: crimson;"  target="_blank" href="{{ url_for('download', filename=i) }}"> <i class="fas fa-chevron-right"></i><b> Download</b></a>  
+                                </div>
+                            </li>
+                          {% endfor %}
+                          {% for i in loading %}
+                            <li><div style="color: crimson;" class="file"> <img style="width: 40px; margin-left: -12px; margin-right: -10px;" src="../static/img/loading.webp" alt="downloaing" > <b>{{''.join(i.split('-')[1:])}}</b></div></li>
+                          {% endfor %}
                           
                         </ul>
                       </div>

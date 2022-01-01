@@ -26,6 +26,19 @@
 
 	<link rel = "icon" href="{{ url_for('static', filename='img/icon.png') }}">
 
+	<style>
+		li{
+			color: coral;
+			transition: 0.2s ease;
+		}
+		li:hover{
+			color: crimson;
+		}
+		label{
+			cursor: pointer;
+		}
+	</style>
+
   <script async src="https://arc.io/widget.min.js#FdkeFyUD"></script>
 
 </head>
@@ -103,11 +116,15 @@
 								<div class="form-group mb-4">
 									<input type="text" name="url" class="form-control" placeholder="{{placeholder}}"  autocomplete="off"/>
 								</div>
-                <!--
-								<div class="form-group mb-4">
-									<input type="number" name="sauce" class="form-control" placeholder="sauce"  autocomplete="off"/>
+								
+								<div class="text-center">
+									<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
 								</div>
-                -->
+							
+						</form>
+
+						
+
 							{% else %}
 
 								<div class="my-2 mb-2">
@@ -115,7 +132,13 @@
 											<div class="media-body tm-service-text">
 												<p><b><u>Website</u> :</b> {{website}} </p>
 												<p><b><u>Title</u> :</b> {{name}} </p>
-												<p><b><u>Latest Chapter</u> :</b> {{firstChap}}</p>
+												{% if website != 'webtoon' %}
+													<p><b><u>Latest Chapter</u> :</b> {{firstChap}}</p>
+												{% else %}
+													{% if page == '1' %}
+														<p><b><u>Latest Chapter</u> :</b> {{firstChap}}</p>
+													{% endif %}
+												{% endif %}
 											</div> 
 								</div>
 								<!--<p>URL : {{placeholder}} </p>-->
@@ -124,9 +147,24 @@
 									<b><u>Description :</u></b> {{description[:100]}}<span id="dots">...</span><span id="more">{{description[100:]}}</span>
 									</p>
 									<p onclick="readMore()" id="myBtn">Read more</p>
-									
-
+									{% if website == 'webtoon' %}
+										<form id="contact-form" action="" method="POST">
+										<ul>
+											{% for i in pages %}
+												{% if i == page %}
+													<u><b><li style="color: crimson; width: 20px; height: 20px; display: inline; padding: 5px;">{{i}}</li></b></u>
+												{% else %}
+													<label for="URL{{i}}">
+														<b><li style=" width: 20px; height: 20px; display: inline; padding: 5px;">{{i}}</li></b>
+													</label>
+													<input style="display: none;" type="submit" value="{{ links[i] }}" id="URL{{i}}" name="url">
+												{% endif %}
+											{% endfor %}
+										</ul>
+										</form>
+									{% endif %}
 									<p>
+						<form id="contact-form" action="" method="POST">
 										<p> <b><u>Download all the chapters</u> :</b> <input id="chapters" type="checkbox" name="downloadAllChapters" onchange="toggleDownload(this);" value="True"> </p>
 										<div id="hide">
 											
@@ -138,6 +176,10 @@
 														{% if website == 'kissmanga' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
 														{% elif website == 'readm.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'mangaread.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'webtoon' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 														{% elif website == 'manganato' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
@@ -154,6 +196,10 @@
 														{% if website == 'kissmanga' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
 														{% elif website == 'readm.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'mangaread.org' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+														{% elif website == 'webtoon' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 														{% elif website == 'manganato' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
@@ -173,6 +219,10 @@
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
 													{% elif website == 'readm.org' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+													{% elif website == 'mangaread.org' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+													{% elif website == 'webtoon' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 													{% elif website == 'manganato' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 													{% elif website == 'mangakakalot' %}
@@ -190,11 +240,7 @@
 							{% endif %}
 
 							<div class="text-center">
-								{% if desc == 'Fetch' %}
-									<button onclick="{{desc}}()" type="submit" class="btn btn-big btn-primary">{{desc}}</button>
-								{% else %}
-									<button id="start" style="display:none;" type="submit" onclick="{{desc}}()" class="btn btn-big btn-primary">{{desc}}</button>
-								{% endif %}
+								<button id="start" style="display:none;" type="submit" onclick="{{desc}}()" class="btn btn-big btn-primary">{{desc}}</button>
 							</div>
 						</form>
 						
