@@ -19,6 +19,27 @@ app.config.update(SECRET_KEY="os.environ['SECRET_KEY']",
                   SESSION_COOKIE_HTTPONLY=True,
                   REMEMBER_COOKIE_HTTPONLY=True)
 
+#SEE DOWNLOADS
+def seeDownloads(dbid):
+    downloads_ = os.listdir(f'static/downloads/{dbid}')
+    downloadsList = list(filter(lambda x: x.endswith('.pdf'), downloads_))
+    loading = mangaDownloaderThreads.Downloader.getLoading(dbid , 'all')
+    for i in downloadsList:
+        temp = mangaDownloaderThreads.Downloader.clearName(mangaDownloaderThreads.Downloader.hardClearName(i.split('.pdf')[0]))
+        if temp in loading:
+            del loading[temp]
+    newLoading = []
+    item = ''
+    for i in loading:
+        for j in i:
+            if j.islower():
+                item += j
+            else:
+                item += ' '+j
+        newLoading.append(item);item = ''
+    
+    return downloadsList , newLoading
+
 #ARC SERVER
 @app.route("/arc-sw.js")
 def arc():
@@ -29,7 +50,7 @@ def removeFailCount():
     if 'failCount' in session:
         del session['failCount']
     
-#webtoon pagination
+#WEBTOON PAGINATION 
 def getWebToonPage(url,info , website):
     if website == 'webtoon':
         page = info[4]
@@ -65,7 +86,7 @@ def removeTempFiles():
 
 
 
-#generate a random filename for loading.json
+#RANDOM loadingID FOR LOADING.JSON
 def getFilename(dbid):
     toCheckFrom = []
     loadingID = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=5)))
@@ -142,26 +163,15 @@ def manga(url):
     if request.method == "GET":
         return render_template('manga.html', placeholder="url", desc='Fetch')
     else:
-        #print(request.form)
         sauce = None #nhentai is no more supported 
         url = request.form['url']
-        if r"!@$%%$@!" in url:
-            temp = url.split(r'!@$%%$@!')
-            url = temp[0]
-            '''
-            sauce = temp[1]
-            '''
         if url == '' or not url.startswith('http'):
             flash(f'Please provide a URL', 'warning')
             return redirect(url_for('manga'))
-
-        website = 'kissmanga' if 'kissmanga.org' in url else 'mangakakalot' if 'mangakakalot.com' in url else 'manganato' if 'manganato.com' in url else 'mangaread.org' if 'mangaread.org' in url else 'readm.org' if 'readm.org' in url else 'webtoon' if 'webtoons.com' in url else None 
-        
+        website = 'kissmanga' if 'kissmanga.org' in url else 'mangakakalot' if 'mangakakalot.com' in url else 'manganato' if 'manganato.com' in url else 'mangaread.org' if 'mangaread.org' in url else 'readm.org' if 'readm.org' in url else 'webtoon' if 'webtoons.com' in url else None
         if website == None:
             flash(f'This Website is not supported!', 'error')
             return redirect(url_for('manga'))
-
-        absurl = str(url) + r"!@$%%$@!" + str(sauce)
         info = dataFetcher.Fetcher.getInfo(website, url, sauce)
         name = info[0]
         if name == '<!Failed!>':
@@ -175,17 +185,11 @@ def manga(url):
             else:
                 flash(f'Failed to Fetch data', 'error')
                 return redirect(url_for('manga'))
-
-        #if website != 'nhentai':
-        desc = info[1]
-        chapters = info[2]
-        cover = info[3]
+        desc = info[1];chapters = info[2];cover = info[3]
         try:
           firstChap = list(chapters.keys())[-1]
         except:
           firstChap = 'None'
-        #else:
-            #cover = info[1]
 
         """ DOWNLOAD ALL CHAPTERS """
         if 'downloadAllChapters' in request.form:
@@ -219,7 +223,7 @@ def manga(url):
             page,pages,links=getWebToonPage(url,info , website)
 
             return render_template('manga.html',
-                                   placeholder=absurl,
+                                   placeholder=url,
                                    desc='Start',
                                    website=website,
                                    name=name,
@@ -311,7 +315,7 @@ def manga(url):
                 
             page,pages,links=getWebToonPage(url,info , website)
             return render_template('manga.html',
-                                   placeholder=absurl,
+                                   placeholder=url,
                                    desc='Start',
                                    website=website,
                                    name=name,
@@ -335,21 +339,15 @@ def manga(url):
                 fileName = str(website) + '-' + str(name) + '-' + str(chapterName)
             fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
             fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
-
-
-            
-            #fileName2=fileName+'[downloading...].pdf'
-            #fileName=fileName+'.pdf'
             
             f = open(f'static/downloads/{session["databaseID"]}/downloads.txt' , 'r'  , encoding='utf-8' )
             fread = f.read();f.close()
             loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , 'all' )
             if fileName in fread or fileName in loading:
-
                 flash(f'Already Downloaded' , 'error')
                 page,pages,links=getWebToonPage(url,info , website)
                 return render_template('manga.html',
-                                   placeholder=absurl,
+                                   placeholder=url,
                                    desc='Start',
                                    website=website,
                                    name=name,
@@ -376,11 +374,11 @@ def manga(url):
                                  session['databaseID'] , loadingID
                              ])
             thr.start()
-
-        #if website != 'nhentai':
+        
         page,pages,links=getWebToonPage(url,info , website)
+
         return render_template('manga.html',
-                                   placeholder=absurl,
+                                   placeholder=url,
                                    desc='Start',
                                    website=website,
                                    name=name,
@@ -412,24 +410,7 @@ def contact():
 def downloads():
     removeFailCount()
     addSession()
-    downloads_ = os.listdir(f'static/downloads/{session["databaseID"]}')
-    #downloads_.remove('downloads.txt');downloads_.remove('loading.json')
-    downloadsList = list(filter(lambda x: x.endswith('.pdf'), downloads_))
-    #print(downloadsList)
-    loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , 'all')
-    for i in downloadsList:
-        temp = mangaDownloaderThreads.Downloader.clearName(mangaDownloaderThreads.Downloader.hardClearName(i.split('.pdf')[0]))
-        if temp in loading:
-            del loading[temp]
-    newLoading = []
-    item = ''
-    for i in loading:
-        for j in i:
-            if j.islower():
-                item += j
-            else:
-                item += ' '+j
-        newLoading.append(item);item = ''
+    downloadsList,newLoading=seeDownloads(session['databaseID'])
     return render_template('downloads.html' , downloads_=downloadsList , loading=newLoading)
 
 
