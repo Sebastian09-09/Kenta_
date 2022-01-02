@@ -12,7 +12,7 @@ import json
 
 class Downloader:
     @staticmethod
-    def getPages(name, website, url, sauce, fullName, databaseID):
+    def getPages(name, website, url, sauce, fullName, databaseID , loadingID):
         #Downloader.createManga(name , website , fullName , databaseID , True)
         if '"' in url:
             url = url.split('"')[0].strip()
@@ -40,7 +40,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
             if website == 'mangakakalot':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -58,7 +58,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
             if website == 'manganato':
                 pages_ = str(soup.find(class_='container-chapter-reader'))
@@ -75,7 +75,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
             if website == 'nhentai':
                 d = {}
@@ -186,7 +186,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
             
 
             if website == 'mangaread.org':
@@ -200,7 +200,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
             if website == 'webtoon':
                 pages_ = soup.find(id='_imageList')
@@ -213,7 +213,7 @@ class Downloader:
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
                 Downloader.createManga(name , website , fullName , databaseID , False)
-                Downloader.removeLoading(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
@@ -305,8 +305,8 @@ class Downloader:
 
         return pagesData
 
-    def removeLoading(name , website , fullName , dbid):
-        loading = Downloader.getLoading(dbid)
+    def removeLoading(name , website , fullName , dbid , loadingID):
+        loading = Downloader.getLoading(dbid , loadingID)
         if website == 'kissmanga':
                 savedAs = str(website) + '-' + str(name)
         else:
@@ -314,7 +314,10 @@ class Downloader:
         savedAs = Downloader.clearName(savedAs)
         savedAs = Downloader.hardClearName(savedAs)
         del loading[savedAs]
-        Downloader.setLoading(dbid , loading)
+        if len(loading) == 0:
+            os.remove(f'static/downloads/{dbid}/loading{loadingID}.json')
+        else:
+            Downloader.setLoading(dbid , loading , loadingID)
             
 
     def createManga(name, website, fullName, dbid , create):
@@ -370,13 +373,42 @@ class Downloader:
 
 
     @staticmethod
-    def getLoading(dbid):
-        with open(f'static/downloads/{dbid}/loading.json' , 'r'  , encoding='utf-8') as f:
-            return json.load(f)
+    def getLoading(dbid , loadingID):
+        if loadingID == 'all':
+            loadingFiles = {}
+            files = os.listdir(f'static/downloads/{dbid}')
+            for i in files:
+                if i.startswith('loading'):
+                    try:
+                        with open(f'static/downloads/{dbid}/{i}' , 'r' , encoding='utf-8') as f:
+                            data = json.load(f)
+                            for j in data:
+                                loadingFiles[j] = data[j]
+                    except:
+                        pass
+            return loadingFiles
+        elif loadingID.startswith('except'):
+            loadingFiles = {}
+            files = os.listdir(f'static/downloads/{dbid}')
+            for i in files:
+                if i.startswith('loading') and not i.endswith(f'{loadingID.split("except")[-1]}.json'):
+                    try:
+                        with open(f'static/downloads/{dbid}/{i}' , 'r' , encoding='utf-8') as f:
+                            data = json.load(f)
+                            for j in data:
+                                loadingFiles[j] = data[j]
+                    except:
+                        pass
+            return loadingFiles
+        else:
+            with open(f'static/downloads/{dbid}/loading{loadingID}.json' , 'r'  , encoding='utf-8') as f:
+                return json.load(f)
+            
+
 
     @staticmethod
-    def setLoading(dbid , data):
-        with open(f'static/downloads/{dbid}/loading.json' , 'w'  , encoding='utf-8') as f:
+    def setLoading(dbid , data , loadingID):
+        with open(f'static/downloads/{dbid}/loading{loadingID}.json' , 'w'  , encoding='utf-8') as f:
             json.dump(data , f)
 
 
