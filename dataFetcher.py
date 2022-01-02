@@ -23,22 +23,13 @@ class Fetcher:
                 htmlText = requests.get(url, stream=True, headers=header)
                 response = htmlText.status_code
                 htmlText = htmlText.text
-            '''
-			else:
-				r=Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-				x=urlopen(r)
-				htmlText=str(x.read() , 'utf-8')
-				response = x.status
-			'''
+
             if response == 200 and website != None:
-                #htmlText = htmlText
                 soup = BeautifulSoup(htmlText, 'lxml')
                 if website == 'kissmanga':
                     name = soup.find(class_='bigChar')
                     desc = soup.find(class_='summary')
                     cover = soup.find(class_='a_center')
-                    #chapters = soup.find( class_='barContent episodeList full' )
-                    #chapter = chapters.a
 
                     rawChapters = soup.find(class_='listing listing8515 full')
                     chapters = {}
@@ -58,8 +49,6 @@ class Fetcher:
                     desc = soup.find(class_='series-summary-wrapper')
                     desc = desc.text.split('Genres:')[0].split(
                         'SUMMARY')[1].strip()
-                    #chapters = soup.find( class_='ui vertical fluid tabular menu' )
-                    #chapter=chapters.a.text.split('-')[0]
                     image = soup.find('img', class_='series-profile-thumb')
                     image = 'https://readm.org' + image.attrs['src']
                     path = r'static/temp'
@@ -83,8 +72,6 @@ class Fetcher:
                 if website == 'mangakakalot':
                     name = soup.find('ul', class_='manga-info-text').li.h1.text
                     desc = soup.find(id='noidungm').text.split('summary:')[1]
-                    #chapters = soup.find( class_='chapter-list' )
-                    #chapter = chapters.div.span.a
                     rawChapters = soup.find_all(class_='row')
                     chapters = {}
                     for i in rawChapters:
@@ -101,7 +88,6 @@ class Fetcher:
                     name = soup.find(class_='story-info-right').h1.text
                     desc = soup.find(id='panel-story-info-description'
                                      ).text.split('Description :')[1]
-                    #chapter = soup.find( 'ul' , class_='row-content-chapter' ).li.a.text.strip()
                     rawChapters = soup.find_all(
                         class_='chapter-name text-nowrap')
                     chapters = {}
@@ -161,18 +147,12 @@ class Fetcher:
                     
                     return (name.strip() , desc.strip() , chapters , '/'+location , currentPage ,pages )
 
-
-
             else:
                 return ('<!Failed!>', )
         
         except:
             return ('<!Failed!>', )
         
-        
-
-
-
 
 #details=Fetcher.getInfo('manganato' , 'https://mangaowl.com/single/71513/brave-star-romantics' , None)
 #print(details)
