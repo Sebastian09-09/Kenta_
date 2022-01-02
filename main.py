@@ -1,3 +1,4 @@
+from json import load
 from flask import Flask, render_template, request, redirect, url_for, flash, session , send_from_directory
 import dataFetcher
 import mangaDownloaderThreads
@@ -28,7 +29,7 @@ def removeFailCount():
     if 'failCount' in session:
         del session['failCount']
     
-
+#webtoon pagination
 def getWebToonPage(url,info , website):
     if website == 'webtoon':
         page = info[4]
@@ -64,6 +65,23 @@ def removeTempFiles():
 
 
 
+#generate a random filename for loading.json
+def getFilename(dbid):
+    toCheckFrom = []
+    loadingID = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=5)))
+    files = os.listdir(f'static/downloads/{dbid}')
+    for i in files:
+        if i.startswith('loading'):
+            toCheckFrom.append(i[7:12])
+    while loadingID in toCheckFrom:
+        loadingID = str(''.join(random.choices(string.ascii_uppercase + string.digits, k=5)))
+
+    return loadingID
+    
+
+
+    
+
 #SESSIONS
 def addSession():
     if session == {}:
@@ -77,8 +95,6 @@ def addSession():
         os.mkdir(f'static/downloads/{db}')
         with open(f'static/downloads/{db}/downloads.txt' , 'w' , encoding='utf-8'):
             pass
-        with open(f'static/downloads/{db}/loading.json' , 'w' , encoding='utf-8') as f:
-            f.write('{}')
         session['databaseID'] = db
     else:
         dbid = session['databaseID']
@@ -87,8 +103,6 @@ def addSession():
             os.mkdir(f'static/downloads/{dbid}')
             with open(f'static/downloads/{dbid}/downloads.txt' , 'w' , encoding='utf-8'):
                 pass
-            with open(f'static/downloads/{dbid}/loading.json' , 'w' , encoding='utf-8') as f:
-                f.write('{}')
 
 
 #HOME
@@ -100,7 +114,7 @@ def home():
 
 
 #DOWNLOAD Multiple Chapters
-def downloadChap(chapters , website , sauce , name , dbid ):
+def downloadChap(chapters , website , sauce , name , dbid  , loadingID):
     for chapter in chapters:
         chapterName = chapter
         chapterUrl = chapters[chapter]
@@ -112,11 +126,11 @@ def downloadChap(chapters , website , sauce , name , dbid ):
         fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
 
         f = open(f'static/downloads/{dbid}/downloads.txt' , 'r'  , encoding='utf-8' )
-        #loading = mangaDownloaderThreads.Downloader.getLoading(dbid)
-        if fileName in f.read():
-            time.sleep(0.1)
+        loading = mangaDownloaderThreads.Downloader.getLoading(dbid , f'except{loadingID}')
+        if fileName in f.read() or fileName in loading:
+            time.sleep(0.01)
         else:
-            mangaDownloaderThreads.Downloader.getPages(chapterName, website, chapterUrl, sauce, name, dbid)
+            mangaDownloaderThreads.Downloader.getPages(chapterName, website, chapterUrl, sauce, name, dbid , loadingID)
             
                 
 
@@ -175,8 +189,11 @@ def manga(url):
 
         """ DOWNLOAD ALL CHAPTERS """
         if 'downloadAllChapters' in request.form:
-            flash(f'Downloading all the chapters' , 'success')
-            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'])
+            loadingID = getFilename(session['databaseID'])
+            with open(f'static/downloads/{session["databaseID"]}/loading{loadingID}.json' , 'w'  , encoding='utf-8') as f:
+                f.write('{}')
+            loadingCheck = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , f'except{loadingID}' )
+            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , loadingID)
             f = open(f'static/downloads/{session["databaseID"]}/downloads.txt' , 'r'  , encoding='utf-8' )
             fread = f.read();f.close()
             for i in chapters:
@@ -186,11 +203,18 @@ def manga(url):
                     fileName = str(website) + '-' + str(name) + '-' + str(i)
                 fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
                 fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
-                if fileName not in fread:
+                if fileName in fread or fileName in loadingCheck:
+                    pass
+                else:
                     loading[fileName] = "True"
-            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading )
-            thr = Thread(target=downloadChap, args=[chapters , website , sauce , name , session['databaseID'] ])
-            thr.start()
+            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading , loadingID)
+            if len(loading) != 0:
+                flash(f'Download started' , 'success')
+                thr = Thread(target=downloadChap, args=[chapters , website , sauce , name , session['databaseID'] , loadingID ])
+                thr.start()
+            else:
+                flash('Already Downloaded' , 'error')
+                os.remove(f'static/downloads/{session["databaseID"]}/loading{loadingID}.json')
             
             page,pages,links=getWebToonPage(url,info , website)
 
@@ -223,7 +247,13 @@ def manga(url):
             startIndex = chapkeys.index(start_)
             endIndex = chapkeys.index(end_)
 
-            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'])
+            loadingID = getFilename(session['databaseID'])
+            with open(f'static/downloads/{session["databaseID"]}/loading{loadingID}.json' , 'w'  , encoding='utf-8') as f:
+                f.write('{}')
+
+            loadingCheck = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , f'except{loadingID}' )
+            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , loadingID )
+            
             
             f = open(f'static/downloads/{session["databaseID"]}/downloads.txt' , 'r'  , encoding='utf-8' )
             fread = f.read();f.close()
@@ -240,7 +270,9 @@ def manga(url):
                             fileName = str(website) + '-' + str(name) + '-' + str(i)
                         fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
                         fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
-                        if fileName not in fread:
+                        if fileName in fread or fileName in loadingCheck:
+                            pass
+                        else:
                             loading[fileName] = "True"
                         
                     if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersEnd'].split('@@@')[0])):
@@ -259,18 +291,23 @@ def manga(url):
                             fileName = str(website) + '-' + str(name) + '-' + str(i)
                         fileName=mangaDownloaderThreads.Downloader.clearName(fileName).strip()
                         fileName=mangaDownloaderThreads.Downloader.hardClearName(fileName).strip()
-                        if fileName not in fread:
+                        if fileName in fread or fileName in loadingCheck:
+                            pass
+                        else:
                             loading[fileName] = "True"
 
                     if mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(i)) == mangaDownloaderThreads.Downloader.hardClearName(mangaDownloaderThreads.Downloader.clearName(request.form['multipleChaptersStart'].split('@@@')[0])):
                         add = False
             
-            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading )
+            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading , loadingID )
             
-
-            flash(f'Download started' , 'success')
-            thr = Thread(target=downloadChap, args=[newChapters , website , sauce , name , session['databaseID'] ])
-            thr.start()
+            if len(loading) != 0:
+                flash(f'Download started' , 'success')
+                thr = Thread(target=downloadChap, args=[newChapters , website , sauce , name , session['databaseID'] , loadingID ])
+                thr.start()
+            else:
+                flash(f'Already Downloaded' , 'error')
+                os.remove(f'static/downloads/{session["databaseID"]}/loading{loadingID}.json')
                 
             page,pages,links=getWebToonPage(url,info , website)
             return render_template('manga.html',
@@ -306,7 +343,7 @@ def manga(url):
             
             f = open(f'static/downloads/{session["databaseID"]}/downloads.txt' , 'r'  , encoding='utf-8' )
             fread = f.read();f.close()
-            loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'])
+            loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , 'all' )
             if fileName in fread or fileName in loading:
 
                 flash(f'Already Downloaded' , 'error')
@@ -324,16 +361,19 @@ def manga(url):
                                    pages=pages,
                                    links=links)
 
+            loadingID=getFilename(session['databaseID'])
+            with open(f'static/downloads/{session["databaseID"]}/loading{loadingID}.json' , 'w'  , encoding='utf-8') as f:
+                f.write('{}')
             
-            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'])
+            loading=mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , loadingID)
             loading[fileName] = "True"
-            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading )
+            mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading , loadingID )
                                    
             flash(f'Download started' , 'success') 
             thr = Thread(target=mangaDownloaderThreads.Downloader.getPages,
                              args=[
                                  chapterName, website, chapterUrl, sauce, name,
-                                 session['databaseID']
+                                 session['databaseID'] , loadingID
                              ])
             thr.start()
 
@@ -373,9 +413,11 @@ def downloads():
     removeFailCount()
     addSession()
     downloads_ = os.listdir(f'static/downloads/{session["databaseID"]}')
-    downloads_.remove('downloads.txt');downloads_.remove('loading.json')
-    loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'])
-    for i in downloads_:
+    #downloads_.remove('downloads.txt');downloads_.remove('loading.json')
+    downloadsList = list(filter(lambda x: x.endswith('.pdf'), downloads_))
+    #print(downloadsList)
+    loading = mangaDownloaderThreads.Downloader.getLoading(session['databaseID'] , 'all')
+    for i in downloadsList:
         temp = mangaDownloaderThreads.Downloader.clearName(mangaDownloaderThreads.Downloader.hardClearName(i.split('.pdf')[0]))
         if temp in loading:
             del loading[temp]
@@ -388,8 +430,7 @@ def downloads():
             else:
                 item += ' '+j
         newLoading.append(item);item = ''
-    
-    return render_template('downloads.html' , downloads_=downloads_ , loading=newLoading)
+    return render_template('downloads.html' , downloads_=downloadsList , loading=newLoading)
 
 
 #DATABASE DETAILS
