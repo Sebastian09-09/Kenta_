@@ -1,7 +1,9 @@
+import re
 from flask import Flask, render_template, request, redirect, url_for, flash, session , send_from_directory
 import dataFetcher
 import mangaDownloaderThreads
 import time
+import tools
 
 app = Flask(__name__)
 import os
@@ -134,7 +136,7 @@ def home():
 
 
 #DOWNLOAD Multiple Chapters
-def downloadChap(chapters , website , sauce , name , dbid  , loadingID):
+def downloadChap(chapters , website , name , dbid  , loadingID):
     for chapter in chapters:
         chapterName = chapter
         chapterUrl = chapters[chapter]
@@ -150,7 +152,7 @@ def downloadChap(chapters , website , sauce , name , dbid  , loadingID):
         if fileName in f.read() or fileName in loading:
             time.sleep(0.01)
         else:
-            mangaDownloaderThreads.Downloader.getPages(chapterName, website, chapterUrl, sauce, name, dbid , loadingID)
+            mangaDownloaderThreads.Downloader.getPages(chapterName, website, chapterUrl, name, dbid , loadingID)
             
                 
 
@@ -162,21 +164,31 @@ def manga(url):
     if request.method == "GET":
         return render_template('manga.html', placeholder="url", desc='Fetch')
     else:
-        sauce = None #nhentai is no more supported 
-        url = request.form['url']
+        if 'newurl' in request.form:
+            newurl = request.form['newurl']
+            newurlObj = tools.Tools(newurl)
+            newurlObj.removefromurlInfo()
+            del newurlObj
+            url = newurl 
+        else:
+            url = request.form['url']
         if url == '' or not url.startswith('http'):
             flash(f'Please provide a URL', 'warning')
             return redirect(url_for('manga'))
-        website = 'kissmanga' if 'kissmanga.org' in url else 'mangakakalot' if 'mangakakalot.com' in url else 'manganato' if 'manganato.com' in url else 'mangaread.org' if 'mangaread.org' in url else 'readm.org' if 'readm.org' in url else 'webtoon' if 'webtoons.com' in url else None
+        urlObj = tools.Tools(url)
+        website = urlObj.getWebsite()
         if website == None:
             flash(f'This Website is not supported!', 'error')
             return redirect(url_for('manga'))
-        info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+        url = urlObj.getabsurl()
+        del urlObj #Delete Url Object 
+        info = dataFetcher.Fetcher.getInfo(website, url)
+        dataFrom = info[-1]
         name = info[0]
         if name == '<!Failed!>':
             if 'failCount' not in session:
                 temp=os.system('pip install -r requirements.txt');session['failCount'] = 1
-                info = dataFetcher.Fetcher.getInfo(website, url, sauce)
+                info = dataFetcher.Fetcher.getInfo(website, url)
                 name = info[0]
                 if name == '<!Failed!>':
                     flash(f'Failed to Fetch data', 'error')
@@ -184,6 +196,7 @@ def manga(url):
             else:
                 flash(f'Failed to Fetch data', 'error')
                 return redirect(url_for('manga'))
+
         desc = info[1];chapters = info[2];cover = info[3]
         try:
           firstChap = list(chapters.keys())[-1]
@@ -213,7 +226,7 @@ def manga(url):
             mangaDownloaderThreads.Downloader.setLoading(session['databaseID'] , loading , loadingID)
             if len(loading) != 0:
                 flash(f'Download started' , 'success')
-                thr = Thread(target=downloadChap, args=[chapters , website , sauce , name , session['databaseID'] , loadingID ])
+                thr = Thread(target=downloadChap, args=[chapters , website  , name , session['databaseID'] , loadingID ])
                 thr.start()
             else:
                 flash('Already Downloaded' , 'error')
@@ -222,6 +235,7 @@ def manga(url):
             page,pages,links=getWebToonPage(url,info , website)
 
             return render_template('manga.html',
+                                   dataFrom = dataFrom,
                                    placeholder=url,
                                    desc='Start',
                                    website=website,
@@ -306,7 +320,7 @@ def manga(url):
             
             if len(loading) != 0:
                 flash(f'Download started' , 'success')
-                thr = Thread(target=downloadChap, args=[newChapters , website , sauce , name , session['databaseID'] , loadingID ])
+                thr = Thread(target=downloadChap, args=[newChapters , website , name , session['databaseID'] , loadingID ])
                 thr.start()
             else:
                 flash(f'Already Downloaded' , 'error')
@@ -314,6 +328,7 @@ def manga(url):
                 
             page,pages,links=getWebToonPage(url,info , website)
             return render_template('manga.html',
+                                   dataFrom = dataFrom,
                                    placeholder=url,
                                    desc='Start',
                                    website=website,
@@ -346,6 +361,7 @@ def manga(url):
                 flash(f'Already Downloaded' , 'error')
                 page,pages,links=getWebToonPage(url,info , website)
                 return render_template('manga.html',
+                                   dataFrom = dataFrom,
                                    placeholder=url,
                                    desc='Start',
                                    website=website,
@@ -369,7 +385,7 @@ def manga(url):
             flash(f'Download started' , 'success') 
             thr = Thread(target=mangaDownloaderThreads.Downloader.getPages,
                              args=[
-                                 chapterName, website, chapterUrl, sauce, name,
+                                 chapterName, website, chapterUrl, name,
                                  session['databaseID'] , loadingID
                              ])
             thr.start()
@@ -377,6 +393,7 @@ def manga(url):
         page,pages,links=getWebToonPage(url,info , website)
 
         return render_template('manga.html',
+                                   dataFrom = dataFrom,
                                    placeholder=url,
                                    desc='Start',
                                    website=website,

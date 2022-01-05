@@ -1,81 +1,83 @@
 import requests
 import threading
-import time
+#import time
 from bs4 import BeautifulSoup
 from requests.sessions import session
-import dataFetcher
-import urllib.parse
+#import dataFetcher
+#import urllib.parse
 from PIL import Image
 from io import BytesIO
 import os
 import json
+from tools import Tools
 
 class Downloader:
-
     @staticmethod
-    def getPages(name, website, url, sauce, fullName, databaseID , loadingID):
+    def getPages(name, website, url, fullName, databaseID , loadingID):
         if '"' in url:
             url = url.split('"')[0].strip()
         print('started '+url)
         pages = {}
 
-        referer = 'https://kissmanga.org' if website == 'kissmanga' else 'https://mangakakalot.com' if website == 'mangakakalot' else 'https://manganato.com' if website == 'manganato' else 'https://readm.org' if website == 'readm.org' else 'https://mangaread.org' if website == 'mangaread.org' else  'https://webtoon.com' if website == 'webtoon' else None
-        header = {'User-Agent': 'Mozilla/5.0', 'Referer': f'{referer}'}
-        htmlText = requests.get(url, stream=True, headers=header)
-        response = htmlText.status_code
-        htmlText = htmlText.text
+        urlObj = Tools(url)
+        referer = urlObj.getReferer()
+        response,htmlText=urlObj.getHTML()
+
         if response == 200 and website != None:
             soup = BeautifulSoup(htmlText, 'lxml')
             if website == 'kissmanga':
                 pages_ = soup.find(id='centerDivVideo')
+                images = pages_.find_all('img')
                 index = 0
-                for i in pages_:
-                    try:
-                        pages[index] = i.attrs['src']
-                        index += 1
-                    except:
-                        pass
+                for i in images:
+                    pages[index] = i.attrs['src']
+                    index += 1
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
-            if website == 'mangakakalot':
-                pages_ = str(soup.find(class_='container-chapter-reader'))
-                tempPages = pages_.strip().split('<img ')
+            elif website == 'mangakakalot':
+                pages_ = soup.find(class_='container-chapter-reader')
+                images = pages_.find_all('img')
                 index = 0
-                for i in tempPages:
-                    if i != '' and 'src=' in i:
-                        for j in i.split(' '):
-                            if 'src=' in j:
-                                pages[index] = j.strip('src=').strip('"')
-                                index += 1
-                                break
+                for i in images:
+                    pages[index] = i.attrs['src']
+                    index += 1
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
-            if website == 'manganato':
-                pages_ = str(soup.find(class_='container-chapter-reader'))
-                tempPages = pages_.strip().split('<img ')
+            elif website == 'manganato':
+                pages_ = soup.find(class_='container-chapter-reader')
+                images = pages_.find_all('img')
                 index = 0
-                for i in tempPages:
-                    if i != '' and 'src=' in i:
-                        for j in i.split(' '):
-                            if 'src=' in j:
-                                pages[index] = j.strip('src=').strip('"')
-                                index += 1
-                                break
+                for i in images:
+                    pages[index] = i.attrs['src']
+                    index += 1
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
+                Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
+
+            elif website == 'mangabat':
+                pages_ = soup.find(class_='container-chapter-reader')
+                images = pages_.find_all('img')
+                index = 0
+                for i in images:
+                    pages[index] = i.attrs['src']
+                    index += 1
+                pagesData = Downloader.getBin(pages, referer)
+                Downloader.toPdf(name, pages, pagesData, website, fullName,
+                                 databaseID)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
             
-            if website == 'readm.org':
+            elif website == 'readm.org':
                 pages_ = soup.find(class_='ch-images ch-image-container')
                 images = pages_.find_all('img')
                 index = 0
@@ -85,10 +87,10 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
             
-            if website == 'mangaread.org':
+            elif website == 'mangaread.org':
                 pages_ = soup.find(class_ = 'reading-content')
                 images = pages_.find_all(class_='page-break no-gaps')
                 index = 0 
@@ -98,10 +100,10 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, referer)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
 
-            if website == 'webtoon':
+            elif website == 'webtoon':
                 pages_ = soup.find(id='_imageList')
                 images = pages_.find_all('img')
                 index = 0
@@ -111,8 +113,10 @@ class Downloader:
                 pagesData = Downloader.getBin(pages, url)
                 Downloader.toPdf(name, pages, pagesData, website, fullName,
                                  databaseID)
-                Downloader.createManga(name , website , fullName , databaseID , False)
+                Downloader.createManga(name , website , fullName , databaseID)
                 Downloader.removeLoading(name , website , fullName , databaseID , loadingID)
+
+        del urlObj #Delete Url Object 
 
 
     def toPdf(name, imagesDict, imagesData, website, fullName, dbid):
@@ -197,7 +201,7 @@ class Downloader:
             Downloader.setLoading(dbid , loading , loadingID)
             
 
-    def createManga(name, website, fullName, dbid , create):
+    def createManga(name, website, fullName, dbid):
         with open(f'static/downloads/{dbid}/downloads.txt' , 'a'  , encoding='utf-8') as f:
             if website == 'kissmanga':
                 savedAs = str(website) + '-' + str(name)
