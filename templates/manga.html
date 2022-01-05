@@ -27,11 +27,11 @@
 	<link rel = "icon" href="{{ url_for('static', filename='img/icon.png') }}">
 
 	<style>
-		li{
+		li , .eff {
 			color: coral;
 			transition: 0.2s ease;
 		}
-		li:hover{
+		li:hover , .eff:hover{
 			color: crimson;
 		}
 		label{
@@ -126,7 +126,15 @@
 						
 
 							{% else %}
-
+								{% if dataFrom == 'stored' %}
+									<b><p style="color: crimson; font-size: 14px; font-weight: bold;">fetched data from previously made requests <form id="contact-form" action="" method="POST">
+										<label style="display: inline;" for="newReq">
+											<u class="eff">click here</u>
+										</label>
+										to send a new request
+										<input style="display: none;" type="submit" value="{{ placeholder }}" id="newReq" name="newurl">
+									</form></p></b>
+								{% endif %}
 								<div class="my-2 mb-2">
 									<img style="float: left;" width="50%" src="{{cover}}" alt="cover image" class="tm-service-img">
 											<div class="media-body tm-service-text">
@@ -183,6 +191,8 @@
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 														{% elif website == 'manganato' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% elif website == 'mangabat' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 														{% elif website == 'mangakakalot' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 														{% endif %}
@@ -203,6 +213,8 @@
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 														{% elif website == 'manganato' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+														{% elif website == 'mangabat' %}
+															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 														{% elif website == 'mangakakalot' %}
 															<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 														{% endif %}
@@ -219,11 +231,15 @@
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.strip(name+' -')}}</option>
 													{% elif website == 'readm.org' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
+													{% elif website == 'zinmanhwa' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 													{% elif website == 'mangaread.org' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 													{% elif website == 'webtoon' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i}}</option>
 													{% elif website == 'manganato' %}
+														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
+													{% elif website == 'mangabat' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
 													{% elif website == 'mangakakalot' %}
 														<option id='option' value="{{i}}@@@{{chapters[i]}}">{{i.split(':')[0]}}</option>
