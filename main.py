@@ -1,3 +1,4 @@
+import re
 from flask import Flask, render_template, request, redirect, url_for, flash, session , send_from_directory
 import dataFetcher
 import mangaDownloaderThreads
@@ -13,7 +14,7 @@ import random
 import string
 
 #SETTINGS
-app.config.update(SECRET_KEY=os.environ['SECRET_KEY'],
+app.config.update(SECRET_KEY="os.environ['SECRET_KEY']",
                   SESSION_COOKIE_SECURE=True,
                   REMEMBER_COOKIE_SECURE=True,
                   SESSION_COOKIE_HTTPONLY=True,
