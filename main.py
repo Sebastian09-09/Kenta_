@@ -185,6 +185,7 @@ def manga(url):
         info = dataFetcher.Fetcher.getInfo(website, url)
         dataFrom = info[-1]
         name = info[0]
+        
         if name == '<!Failed!>':
             if 'failCount' not in session:
                 temp=os.system('pip install -r requirements.txt');session['failCount'] = 1
@@ -196,7 +197,7 @@ def manga(url):
             else:
                 flash(f'Failed to Fetch data', 'error')
                 return redirect(url_for('manga'))
-
+        
         desc = info[1];chapters = info[2];cover = info[3]
         try:
           firstChap = list(chapters.keys())[-1]

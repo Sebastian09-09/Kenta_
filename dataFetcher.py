@@ -17,7 +17,9 @@ class Fetcher:
                 return(name,desc,chapters,image,'stored')
             else:
                 response , htmlText = urlObj.getHTML()
+                print(response , website)
                 if response == 200 and website != None:
+                    print('ibsa')
                     soup = BeautifulSoup(htmlText, 'lxml')
                     if website == 'kissmanga':
                         name = soup.find(class_='bigChar')

@@ -17,11 +17,6 @@ class Tools:
             else 'mangabat' if 'mangabat.com' in url \
             else None
         return website
-            #else 'webtoon.uk' if 'webtoon.uk' in url \
-            #else 'mangasy' if 'mangasy.com' in url \
-            #else 'readlightnovel' if 'readlightnovel.me' in url \
-            #else 'wuxiaworld' if 'wuxiaworld.name' in url \
-            #else 'zinmanhwa' if 'zinmanhwa.com' in url \
             
 
     def getabsurl(self):
@@ -91,15 +86,6 @@ class Tools:
                 absurl = url.split('-chap-')[0]
             return absurl
 
-        elif website == 'zinmanhwa':
-            url = str(self.url)
-            absurl = url
-            url = url.split('/')
-            if len(url) > 4:
-                mangaID = url[4]
-                absurl = f'https://zinmanhwa.com/manga/{mangaID}'
-            return absurl
-
     def getReferer(self):
         website = self.getWebsite()
         referer = 'https://kissmanga.org/' if website == 'kissmanga' \
@@ -144,3 +130,6 @@ class Tools:
         response = htmlText.status_code
         htmlText = htmlText.text
         return response , htmlText
+
+#t1 = Tools('https://www.mangasy.com/manhua/abduct-a-mommy-and-brings-her-home/chapter-367-gift/')
+#print(t1.getabsurl())
