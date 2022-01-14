@@ -1,4 +1,3 @@
-import re
 from flask import Flask, render_template, request, redirect, url_for, flash, session , send_from_directory
 import dataFetcher
 import mangaDownloaderThreads
