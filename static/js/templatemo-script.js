@@ -72,7 +72,7 @@ var websites = {
     3: ['mangaread.org.png' , '70' , 'Welcome to the world of manga. Latest novelties manga to read online. A daily updated directory of the manga. Read along with us.','Mangaread.org' , 'https://mangaread.org/'],
     4: ['readm.org.png' , '60' , 'Biggest manga library on the web. Absolutely free and daily updated English translated manga online for free!','Readm.org' , 'https://readm.org/'],
     5: ['webtoon.jpg' , '80' , 'WEBTOON is home to thousands of stories across 23 genres including romance, comedy, action, fantasy, and horror. Read comics, webcomics, manga, and manhwa online or download the WEBTOON app.','Webtoon.com' , 'https://webtoon.com/'],
-    6: ['mangabat.png' , '40' , 'Read free manga comics online. With the best new manga list being updated daily. Become Otaku with us now! Read manga online for free in high quality and most full at M.MangaBat.com','M.MangaBat.com/m' , 'https://m.mangabat.com/'],
+    6: ['mangabat.png' , '40' , 'Read free manga comics online. With the best new manga list being updated daily. Become Otaku with us now! Read manga online for free in high quality and most full at M.MangaBat.com','MangaBat.com' , 'https://m.mangabat.com/m'],
 };
 function increment(){
     if (currentWebpage < 6){
